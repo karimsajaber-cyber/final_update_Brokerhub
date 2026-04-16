@@ -1,0 +1,55 @@
+<div class="assistant-widget" id="assistant-widget" data-auto-open="{{ show_ai_assistant|yesno:'true,false' }}">
+    <div class="assistant-overlay" id="assistant-overlay" aria-hidden="true"></div>
+
+    <button type="button" class="assistant-bubble" id="assistant-launcher" aria-controls="assistant-panel" aria-expanded="false" aria-label="Open assistant">
+        <span class="assistant-bubble-ring"></span>
+        <span class="assistant-bubble-core">AI</span>
+    </button>
+
+    <section class="assistant-panel" id="assistant-panel" aria-hidden="true" role="dialog" aria-label="AI Assistant">
+        <div class="assistant-panel-header">
+            <div class="assistant-panel-title">
+                <span class="assistant-panel-badge">AI</span>
+                <div>
+                    <h3>Shopping Assistant</h3>
+                    <p>How can I help you today?</p>
+                </div>
+            </div>
+            <div class="assistant-panel-actions">
+                <button type="button" class="assistant-expand" id="assistant-expand" aria-label="Expand assistant">&#9723;</button>
+                <button type="button" class="assistant-close" id="assistant-close" aria-label="Minimize assistant">-</button>
+            </div>
+        </div>
+
+        <div class="assistant-panel-body">
+            <div id="chat-box" class="chat-box">
+                <div class="msg-bubble msg-bubble-ai">
+                    <div class="ai-avatar">AI</div>
+                    <div class="ai-bubble">
+                        <p>Hi. How can I help you find the right product today?</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="results-area" class="assistant-results" hidden>
+                <div id="results-container"></div>
+            </div>
+
+            <div class="assistant-categories" id="assistant-categories">
+                <p>Try a category</p>
+                <div class="assistant-categories-list">
+                    <button type="button" class="cat-btn" data-category="Shopping" data-emoji="&#128722;">Shopping</button>
+                    <button type="button" class="cat-btn" data-category="Electronics" data-emoji="&#128241;">Electronics</button>
+                    <button type="button" class="cat-btn" data-category="Fashion" data-emoji="&#128087;">Fashion</button>
+                    <button type="button" class="cat-btn" data-category="Home and Living" data-emoji="&#127968;">Home &amp; Living</button>
+                    <button type="button" class="cat-btn" data-category="Sports" data-emoji="&#9917;">Sports</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-input-row">
+            <input type="text" id="chat-input" class="chat-input" placeholder="Type the product you want...">
+            <button type="button" id="chat-send" class="assistant-send">Send</button>
+        </div>
+    </section>
+</div>

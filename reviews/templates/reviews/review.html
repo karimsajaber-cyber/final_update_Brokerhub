@@ -1,0 +1,116 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Write a Review - BrokersHub</title>
+    <link rel="stylesheet" href="{% static 'reviews/css/review.css' %}">
+    <script src="{% static 'reviews/js/review.js' %}" defer></script>
+</head>
+<body>
+
+{% include 'partials/navbar.html' %}
+
+<div class="review-page">
+    <div class="review-page-content">
+        <section class="review-header">
+            <h1 class="review-page-title">Write a Review</h1>
+            <p class="review-page-subtitle">Share your experience with this broker</p>
+        </section>
+            {% if error %}
+            <div class="review-error-box">
+                {{ error }}
+            </div>
+            {% endif %}
+
+            <div class="review-card review-summary-card">
+                <h3 class="review-card-title">Deal Summary</h3>
+                <div class="review-summary-grid">
+                    <div>
+                        <p class="review-meta-label">Broker</p>
+                        <p class="review-meta-value">{{ broker_quote.broker.business_name }}</p>
+                    </div>
+                    <div>
+                        <p class="review-meta-label">Request</p>
+                        <p class="review-meta-value">{{ broker_quote.quote_request.product_name }}</p>
+                    </div>
+                    <div>
+                        <p class="review-meta-label">Suggested Price</p>
+                        <p class="review-meta-value review-meta-value-price">${{ broker_quote.total_price }}</p>
+                    </div>
+                    <div>
+                        <p class="review-meta-label">Date</p>
+                        <p class="review-meta-value">{{ broker_quote.updated_at|date:"Y-m-d" }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="review-card review-form-card">
+                {% if not existing_review %}
+
+                <form method="POST" action="/review/{{ broker_quote.id }}/" class="review-form">
+                    {% csrf_token %}
+
+                    <div class="review-form-group">
+                        <label for="rating-value">Your Rating *</label>
+                        <div class="review-stars" data-rating-group>
+                            {% for i in "12345" %}
+                            <button type="button" class="star-btn" data-rating="{{ forloop.counter }}" aria-label="Rate {{ forloop.counter }} out of 5">
+                                &#9733;
+                            </button>
+                            {% endfor %}
+                        </div>
+                        <p id="rating-label" class="review-rating-label"></p>
+                        <input type="hidden" name="rating" id="rating-value" value="">
+                    </div>
+
+                    <div class="review-form-group">
+                        <label for="review-comment">Your Review *</label>
+                        <textarea id="review-comment" name="comment" required rows="6" minlength="20" placeholder="Share your experience &mdash; product quality, delivery, communication..."></textarea>
+                        <p class="review-help-text">Minimum 20 characters</p>
+                    </div>
+
+                    <div class="review-guidelines">
+                        <p>Review Guidelines:</p>
+                        <ul>
+                            <li>Be honest and fair in your review</li>
+                            <li>Focus on your personal experience</li>
+                            <li>Mention quality, delivery, and communication</li>
+                            <li>Keep it professional and respectful</li>
+                        </ul>
+                    </div>
+
+                    <div class="review-actions">
+                        <button type="submit" class="review-button review-button-primary">Submit Review</button>
+                        <a href="{% url 'my_requests' %}" class="review-button review-button-secondary">Cancel</a>
+                    </div>
+                </form>
+
+                {% else %}
+
+                <div class="review-existing-state">
+                    <h3 class="review-existing-title">&#10004; You already reviewed this deal</h3>
+
+                    <p class="review-existing-rating">
+                        Your Rating:
+                        <strong class="review-existing-rating-value">{{ existing_review.rating }} &#9733;</strong>
+                    </p>
+
+                    <p class="review-existing-comment">
+                        "{{ existing_review.comment }}"
+                    </p>
+
+                    <div class="review-existing-actions">
+                        <a href="{% url 'my_requests' %}" class="review-button review-button-secondary">Back to My Requests</a>
+                    </div>
+                </div>
+
+                {% endif %}
+            </div>
+    </div>
+</div>
+
+{% include 'partials/footer.html' %}
+</body>
+</html>

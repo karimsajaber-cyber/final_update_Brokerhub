@@ -1,0 +1,10 @@
+from django.apps import apps
+Message = apps.get_model('chat', 'Message')
+Review = apps.get_model('reviews', 'Review')
+BrokerQuote = apps.get_model('requests', 'BrokerQuote')
+QuoteRequest = apps.get_model('requests', 'QuoteRequest')
+Review.objects.all().delete()
+Message.objects.all().delete()
+BrokerQuote.objects.all().delete()
+QuoteRequest.objects.all().delete()
+print('Done')

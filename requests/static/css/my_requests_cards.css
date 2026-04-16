@@ -1,0 +1,176 @@
+.myrq-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 32px 0;
+}
+
+.myrq-card {
+    background: #ffffff !important;
+    border-radius: 20px !important;
+    box-shadow: 0 2px 16px rgba(91,72,242,0.08) !important;
+    border: 1.5px solid #eef0f8 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden;
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.myrq-card:hover {
+    box-shadow: 0 8px 32px rgba(91,72,242,0.14) !important;
+    transform: translateY(-2px);
+}
+
+.myrq-card-top {
+    padding: 18px 18px 14px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    border-bottom: 1px solid #f0f2fb !important;
+    background: #fff !important;
+}
+
+.myrq-avatar {
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 50% !important;
+    background: linear-gradient(135deg,#3f65ff,#7f35db) !important;
+    color: #fff !important;
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+}
+
+.myrq-title-block {
+    flex: 1 !important;
+    min-width: 0 !important;
+}
+
+.myrq-name {
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    color: #1a1a2e !important;
+    margin: 0 0 4px !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.myrq-badge {
+    display: inline-block !important;
+    padding: 2px 10px !important;
+    border-radius: 999px !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+}
+
+.myrq-badge-pending   { background:#fff8e1 !important; color:#d97706 !important; }
+.myrq-badge-accepted  { background:#ecfdf5 !important; color:#059669 !important; }
+.myrq-badge-completed { background:#ede9ff !important; color:#5b48f2 !important; }
+.myrq-badge-cancelled { background:#fef2f2 !important; color:#dc2626 !important; }
+.myrq-badge-quoted    { background:#e0f2fe !important; color:#0284c7 !important; }
+
+.myrq-details-btn {
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    color: #5b48f2 !important;
+    background: #ede9ff !important;
+    padding: 5px 12px !important;
+    border-radius: 8px !important;
+    text-decoration: none !important;
+    flex-shrink: 0;
+    transition: background 0.2s;
+}
+
+.myrq-details-btn:hover {
+    background: #ddd6fe !important;
+    color: #4c38d4 !important;
+}
+
+.myrq-info {
+    padding: 14px 18px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 7px !important;
+    flex: 1;
+    background: #fff !important;
+}
+
+.myrq-info-row {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+}
+
+.myrq-info-label {
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    color: #a0aab8 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    min-width: 62px;
+}
+
+.myrq-info-val {
+    font-size: 13px !important;
+    color: #374151 !important;
+    font-weight: 500 !important;
+}
+
+.myrq-info-val-price {
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    color: #15803d !important;
+}
+
+.myrq-footer {
+    padding: 12px 18px 16px !important;
+    border-top: 1px solid #f0f2fb;
+    display: flex !important;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    background: #fff !important;
+}
+
+.myrq-btn {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 16px !important;
+    border-radius: 10px !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    text-decoration: none !important;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    transition: opacity 0.15s;
+}
+.myrq-btn:hover { opacity: 0.85; }
+
+.myrq-btn-edit     { background:#ede9ff !important; color:#5b48f2 !important; }
+.myrq-btn-delete   { background:#fef2f2 !important; color:#dc2626 !important; }
+.myrq-btn-whatsapp { background:linear-gradient(135deg,#25c879,#128c5e) !important; color:#fff !important; }
+.myrq-btn-rate     { background:linear-gradient(135deg,#3f65ff,#7f35db) !important; color:#fff !important; }
+.myrq-btn-remove   { background:#f3f4f6 !important; color:#6b7280 !important; }
+
+.myrq-cancelled-msg {
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    color: #dc2626 !important;
+    background: #fef2f2 !important;
+    border-radius: 8px;
+    padding: 7px 12px !important;
+    width: 100%;
+}
+
+@media (max-width: 900px) {
+    .myrq-grid { grid-template-columns: repeat(2,1fr) !important; }
+}
+@media (max-width: 600px) {
+    .myrq-grid { grid-template-columns: 1fr !important; }
+}

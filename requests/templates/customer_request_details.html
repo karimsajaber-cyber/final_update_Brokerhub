@@ -1,0 +1,100 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Details</title>
+    <link rel="stylesheet" href="{% static 'css/broker_request_details.css' %}">
+</head>
+<body>
+    {% include 'partials/navbar.html' %}
+
+    <section class="page-header" style="width:100%;margin-top:20px;">
+        <div class="container">
+            <h1>Request Details</h1>
+            <p>View your request information and current status.</p>
+        </div>
+    </section>
+
+    <section class="details-section">
+        <div class="container details-wrap">
+
+            <div class="details-card">
+                <div class="details-top">
+                    <div>
+                        <span class="details-tag">My Request</span>
+                        <h2>{{ request_item.product_name }}</h2>
+                    </div>
+                    <span class="request-status">{{ request_item.status|title }}</span>
+                </div>
+
+                <div class="details-grid">
+                    <div class="details-block">
+                        <h3>Request Information</h3>
+                        <p><strong>Platform:</strong> {{ request_item.platform.name }}</p>
+                        <p><strong>City:</strong> {% if request_item.city %}{{ request_item.city.name }}{% else %}Not specified{% endif %}</p>
+                        <p><strong>Created:</strong> {{ request_item.created_at|date:"M d, Y" }}</p>
+                    </div>
+
+                    {% if request_item.broker %}
+                    <div class="details-block">
+                        <h3>Broker Information</h3>
+                        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+                            {% if request_item.broker.profile_image %}
+                            <img src="{{ request_item.broker.profile_image.url }}" alt="{{ request_item.broker.business_name }}" style="width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid rgba(91,72,242,0.2);">
+                            {% else %}
+                            <span style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#6e5bf7,#3f8cff);color:#fff;font-size:20px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">{{ request_item.broker.business_name|slice:":1"|upper }}</span>
+                            {% endif %}
+                            <div>
+                                <p style="margin:0;font-weight:700;color:#27314f;">{{ request_item.broker.business_name }}</p>
+                                {% if request_item.broker.city %}<p style="margin:2px 0 0;font-size:12px;color:#62708f;">{{ request_item.broker.city.name }}</p>{% endif %}
+                            </div>
+                        </div>
+                        {% if request_item.assigned_price %}
+                        <p><strong>Price:</strong> ${{ request_item.assigned_price }}</p>
+                        {% endif %}
+                        {% if request_item.assigned_delivery %}
+                        <p><strong>Delivery:</strong> {{ request_item.assigned_delivery }} days</p>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                {% if request_item.product_url %}
+                <div class="details-block">
+                    <h3>Product URL</h3>
+                    <a href="{{ request_item.product_url }}" target="_blank" style="color:#5b48f2;font-size:13px;font-weight:600;word-break:break-all;">{{ request_item.product_url }}</a>
+                </div>
+                {% endif %}
+
+                {% if request_item.clean_notes %}
+                <div class="details-block notes-block">
+                    <h3>Description</h3>
+                    <p class="request-notes">{{ request_item.clean_notes }}</p>
+                </div>
+                {% endif %}
+
+                <div class="back-row">
+                    {% if request_item.broker %}
+                    <a href="{% url 'chat_conversation' request_item.id %}" class="back-link">Open Chat</a>
+                    {% endif %}
+                    <a href="{% url 'my_requests' %}" class="back-link">Back to My Requests</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {% include 'partials/footer.html' %}
+
+    {% if request.session.role == 'customer' %}
+    <link rel="stylesheet" href="{% static 'requests/css/chatbot.css' %}">
+    {% include 'requests/chatbot_widget.html' %}
+    <script>
+        const chatSearchUrl = "{% url 'chatbot_search' %}";
+        const chatbotAutoOpen = false;
+    </script>
+    <script src="{% static 'requests/js/chatbot.js' %}"></script>
+    {% endif %}
+</body>
+</html>

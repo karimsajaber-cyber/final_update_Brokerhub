@@ -1,0 +1,66 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/create_request.css' %}">
+    <title>Edit Request</title>
+</head>
+
+<body>
+    {% include 'partials/navbar.html' %}
+
+    <div class="page-container">
+
+        {% if selected_broker %}
+        <div class="selected-broker-box">
+            <p class="selected-broker-text">You are editing a request for {{ selected_broker.business_name }}.</p>
+        </div>
+        {% endif %}
+
+        <div class="form-card">
+            <form action="{% url 'edit_request' request_item.id %}" method="POST">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" name="product_name" value="{{ request_item.product_name }}">
+                </div>
+
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea name="notes">{{ request_item.notes }}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Product URL <span style="font-weight:400;color:#62708f;font-size:12px;">(optional)</span></label>
+                    <input type="url" name="product_url" value="{{ request_item.product_url }}" placeholder="https://...">
+                </div>
+
+                <button class="submit-btn">Update Request</button>
+            </form>
+        </div>
+
+        <div class="form-feedback-wrap">
+            {% if error_message %}
+            <div class="feedback-box show error">{{ error_message }}</div>
+            {% endif %}
+        </div>
+
+    </div>
+
+
+    {% if request.session.role == 'customer' %}
+    <link rel="stylesheet" href="{% static 'requests/css/chatbot.css' %}">
+    {% include 'requests/chatbot_widget.html' %}
+    <script>
+        const chatSearchUrl = "{% url 'chatbot_search' %}";
+        const chatbotAutoOpen = false;
+    </script>
+    <script src="{% static 'requests/js/chatbot.js' %}"></script>
+    {% endif %}
+</body>
+
+</html>

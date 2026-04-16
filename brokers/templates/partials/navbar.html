@@ -1,0 +1,84 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/landing_page.css' %}">
+<nav class="navbar" style="border-radius:0;width:100%;margin:0;">
+    <div class="container navbar-container">
+        {% if request.session.role == 'broker' %}
+        <a href="{% url 'broker_landing' %}" class="logo" style="display:inline-flex;align-items:center;gap:9px;"><svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+  <rect width="34" height="34" rx="10" fill="rgba(255,255,255,0.22)"/>
+  <rect width="34" height="34" rx="10" fill="url(#bh_grad)" opacity="0.35"/>
+  <text x="17" y="23" text-anchor="middle" font-family="'Plus Jakarta Sans', 'Poppins', sans-serif" font-weight="800" font-size="14" letter-spacing="-0.5" fill="white">BH</text>
+  <defs>
+    <linearGradient id="bh_grad" x1="0" y1="0" x2="34" y2="34" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="white" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="white" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+</svg>BrokersHub</a>
+        {% else %}
+        <a href="{% url 'landing' %}" class="logo" style="display:inline-flex;align-items:center;gap:9px;"><svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+  <rect width="34" height="34" rx="10" fill="rgba(255,255,255,0.22)"/>
+  <rect width="34" height="34" rx="10" fill="url(#bh_grad)" opacity="0.35"/>
+  <text x="17" y="23" text-anchor="middle" font-family="'Plus Jakarta Sans', 'Poppins', sans-serif" font-weight="800" font-size="14" letter-spacing="-0.5" fill="white">BH</text>
+  <defs>
+    <linearGradient id="bh_grad" x1="0" y1="0" x2="34" y2="34" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="white" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="white" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+</svg>BrokersHub</a>
+        {% endif %}
+        <div class="menu-toggle" id="menu-toggle">&#9776;</div>
+        <ul class="nav-links" id="nav-links">
+            {% if request.session.role == 'broker' %}
+            <li><a href="{% url 'broker_landing' %}" class="nav-link">Home</a></li>
+            <li><a href="{% url 'about' %}" class="nav-link">About Us</a></li>
+            <li class="nav-dropdown">
+                <details class="nav-dropdown-panel">
+                    <summary class="nav-link nav-dropdown-toggle">Insights <span class="nav-caret">&#9662;</span></summary>
+                    <div class="nav-dropdown-menu">
+                        <a href="{% url 'broker_dashboard' %}" class="nav-dropdown-item">Dashboard</a>
+                        <a href="{% url 'broker_stats' %}" class="nav-dropdown-item">Statistics</a>
+                    </div>
+                </details>
+            </li>
+            <li class="nav-dropdown">
+                <details class="nav-dropdown-panel">
+                    <summary class="nav-link nav-dropdown-toggle">Workspace <span class="nav-caret">&#9662;</span></summary>
+                    <div class="nav-dropdown-menu">
+                        <a href="{% url 'update_broker_profile' %}" class="nav-dropdown-item">Update Profile</a>
+                        <a href="{% url 'broker_requests' %}" class="nav-dropdown-item">Incoming Requests</a>
+                        <a href="{% url 'chat_home' %}" class="nav-dropdown-item">Customer Chats</a>
+                    </div>
+                </details>
+            </li>
+            <li><a href="{% url 'logout' %}" class="nav-link nav-logout">Logout</a></li>
+            {% elif request.session.role == 'customer' %}
+            <li><a href="{% url 'landing' %}" class="nav-link">Home</a></li>
+            <li><a href="{% url 'browse_brokers' %}" class="nav-link">Browse Brokers</a></li>
+            <li><a href="{% url 'about' %}" class="nav-link">About Us</a></li>
+            <li><a href="{% url 'my_requests' %}" class="nav-link">My Requests</a></li>
+            <li><a href="{% url 'logout' %}" class="nav-link nav-logout">Logout</a></li>
+            {% else %}
+            <li><a href="{% url 'landing' %}" class="nav-link">Home</a></li>
+            <li><a href="{% url 'browse_brokers' %}" class="nav-link">Browse Brokers</a></li>
+            <li><a href="{% url 'about' %}" class="nav-link">About Us</a></li>
+            <li><a href="{% url 'login' %}" class="nav-link nav-login">Login</a></li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>
+
+<script>
+(function(){
+    var details = document.querySelectorAll('.nav-dropdown-panel');
+    details.forEach(function(el){
+        el.addEventListener('toggle', function(){
+            if(el.open){
+                details.forEach(function(other){
+                    if(other !== el) other.removeAttribute('open');
+                });
+            }
+        });
+    });
+})();
+</script>

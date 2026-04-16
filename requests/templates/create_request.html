@@ -1,0 +1,174 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/create_request.css' %}">
+    <title>Create Request</title>
+</head>
+
+<body>
+    {% include 'partials/navbar.html' %} 
+
+    <div class="page-container">
+        {% if selected_broker %} 
+        <div class="selected-broker-box"> 
+            <p class="selected-broker-text">You are contacting {{ selected_broker.business_name }}.</p> 
+        </div> 
+        {% endif %} 
+
+        <div class="quick-requests">
+            <p class="section-title">Choose a quick request or describe your own below</p>
+
+            <div class="quick-grid">
+                {% for t in templates %}
+                <div class="quick-card"
+                     data-title="{{ t.title }}"
+                     data-description="{{ t.description }}">
+
+                    <h3>{{ t.title }}</h3>
+
+                    {% if t.description %}
+                    <p>{{ t.description }}</p>
+                    {% endif %}
+
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="form-card">
+            <form action="{% url 'create_request' %}" method="POST" id="requestForm">
+                {% csrf_token %}
+                <input type="hidden" name="broker_id" value="{% if selected_broker %}{{ selected_broker.id }}{% endif %}"> 
+
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" name="product_name" id="titleInput">
+                </div>
+
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea name="notes" id="descInput"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Product URL <span style="font-weight:400;color:#62708f;font-size:12px;">(optional)</span></label>
+                    <input type="url" name="product_url" id="urlInput" placeholder="https://...">
+                </div>
+
+                <input type="hidden" name="category" id="categoryInput">
+
+                <button class="submit-btn">Submit Request</button>
+            </form>
+<script>
+{% if prefill_name %}
+document.addEventListener('DOMContentLoaded', function() {
+    var nameField = document.querySelector('input[name="product_name"]');
+    var urlField = document.getElementById('urlInput');
+    if (nameField && !nameField.value) nameField.value = "{{ prefill_name }}";
+    if (urlField && !urlField.value) urlField.value = "{{ prefill_url }}";
+});
+{% endif %}
+</script>
+        </div>
+
+        <div class="form-feedback-wrap"> 
+            <div class="feedback-box" id="feedbackBox" aria-live="polite"></div> 
+
+            {% if error_message %} 
+            <div class="feedback-box show error">{{ error_message }}</div> 
+            {% endif %} 
+        </div> 
+
+    </div>
+
+    <script>
+        const requestForm = document.getElementById("requestForm");
+        const titleInput = document.getElementById("titleInput");
+        const descInput = document.getElementById("descInput");
+        const feedbackBox = document.getElementById("feedbackBox");
+        const quickCards = document.querySelectorAll(".quick-card");
+
+        function fillRequest(title, desc) {
+            titleInput.value = title;
+            descInput.value = desc || "";
+        }
+
+        function showFeedback(message, type) {
+            feedbackBox.textContent = message;
+            feedbackBox.className = "feedback-box show " + type;
+        }
+
+        quickCards.forEach((card) => {
+            card.addEventListener("click", () => {
+                quickCards.forEach((item) => item.classList.remove("selected"));
+                card.classList.add("selected");
+                fillRequest(card.dataset.title, card.dataset.description);
+            });
+        });
+
+        requestForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const productName = titleInput.value.trim();
+            const notes = descInput.value.trim();
+
+            if (!productName || !notes) {
+                showFeedback("Title and description are required.", "error");
+                return;
+            }
+
+            const formData = new FormData(requestForm);
+
+            try {
+                const response = await fetch(requestForm.action, {
+                    method: "POST",
+                    body: formData,
+                    credentials: "same-origin"
+                });
+
+                if (response.redirected && response.url.includes("/login")) {
+                    window.location.href = response.url;
+                    return;
+                }
+
+                if (response.redirected && response.url.includes("/create")) {
+                    window.location.href = response.url;
+                    return;
+                }
+
+                if (response.redirected && (response.url.includes("/browse") || response.url.includes("/brokers"))) {
+                    window.location.href = response.url;
+                    return;
+                }
+
+                if (response.url.includes("/requests/my")) {
+                    requestForm.reset();
+                    quickCards.forEach((card) => card.classList.remove("selected"));
+                    showFeedback("Request submitted successfully.", "success");
+                    window.location.href = response.url;
+                    return;
+                }
+
+                showFeedback("The request was not submitted. Please check the form and try again.", "error");
+            } catch (error) {
+                showFeedback("A network error prevented submission. Please try again.", "error");
+            }
+        });
+    </script>
+ 
+
+    {% if request.session.role == 'customer' %}
+    <link rel="stylesheet" href="{% static 'requests/css/chatbot.css' %}">
+    {% include 'requests/chatbot_widget.html' %}
+    <script>
+        const chatSearchUrl = "{% url 'chatbot_search' %}";
+        const chatbotAutoOpen = false;
+    </script>
+    <script src="{% static 'requests/js/chatbot.js' %}"></script>
+    {% endif %}
+</body>
+
+</html>

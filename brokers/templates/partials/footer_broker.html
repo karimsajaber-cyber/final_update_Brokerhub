@@ -1,0 +1,26 @@
+<footer class="footer">
+    <div class="container footer-grid">
+        <div>
+            <a href="{% url 'broker_landing' %}" class="brand footer-brand">BrokersHub</a>
+            <p class="footer-text">Your trusted platform to manage requests, grow your business, and connect with customers.</p>
+        </div>
+        <div>
+            <h3>Broker Portal</h3>
+            <a href="{% url 'broker_landing' %}" class="footer-link">Home</a>
+            <a href="{% url 'broker_dashboard' %}" class="footer-link">Dashboard</a>
+            <a href="{% url 'broker_requests' %}" class="footer-link">My Requests</a>
+            <a href="{% url 'broker_stats' %}" class="footer-link">Statistics</a>
+            <a href="{% url 'update_broker_profile' %}" class="footer-link">Update Profile</a>
+        </div>
+        <div>
+            <h3>Contact Info</h3>
+            <p class="footer-text">Email: info@brokershub.com</p>
+            <p class="footer-text">Phone: +1 (555) 123-4567</p>
+            <p class="footer-text">Support: Mon - Fri, 9AM - 6PM</p>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2026 BrokersHub. All rights reserved.</p>
+    </div>
+</footer>
+{% include 'partials/navbar_script.html' %}

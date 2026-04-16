@@ -1,0 +1,77 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Broker Requests</title>
+    <link rel="stylesheet" href="{% static 'css/broker_requests.css' %}">
+</head>
+
+<body>
+    {% include 'partials/navbar.html' %}
+
+    <section class="page-header" style="width:100%;margin-top:20px;">
+        <div class="container">
+            <h1>Broker Requests</h1>
+            <p>Review the customer requests assigned to your broker account.</p>
+        </div>
+    </section>
+
+    <section class="requests-section">
+        <div class="container">
+            {% if notice_message %}
+            <div class="notice-box">
+                <p class="notice-text">{{ notice_message }}</p>
+            </div>
+            {% endif %}
+
+            {% if assigned_requests %}
+            <div class="requests-grid">
+                {% for request_item in assigned_requests %}
+                <div class="request-card">
+                    <div class="request-top">
+                        <div>
+                            <h2>{{ request_item.product_name }}</h2>
+                            <p class="request-customer">Customer: {{ request_item.customer.username }}</p>
+                        </div>
+                        <span class="request-status">{{ request_item.status|title }}</span>
+                    </div>
+
+                    <p class="request-notes">
+                        {% if request_item.notes %}
+                            {{ request_item.notes|truncatechars:150 }}
+                        {% else %}
+                            No description was added for this request.
+                        {% endif %}
+                    </p>
+
+                    <div class="request-meta">
+                        <span>Platform: {{ request_item.platform.name }}</span>
+                        <span>Phone: {{ request_item.customer.phone }}</span>
+                        <span>City: {% if request_item.city %}{{ request_item.city.name }}{% else %}Not specified{% endif %}</span>
+                        <span>Created: {{ request_item.created_at|date:"M d, Y" }}</span>
+                    </div>
+
+                    <div class="request-actions">
+                        <a href="{% url 'broker_request_details' request_item.id %}" class="details-link">View Details</a>
+                        <a href="{% url 'chat_conversation' request_item.id %}" class="details-link">Open Chat</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <h2>No Assigned Requests</h2>
+                <p>No customer requests have been assigned to your broker account yet.</p>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+    {% include 'partials/footer_broker.html' %}
+
+</body>
+
+</html>

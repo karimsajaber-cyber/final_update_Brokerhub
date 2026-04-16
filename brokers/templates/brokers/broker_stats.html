@@ -1,0 +1,153 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Statistics - BrokersHub</title>
+    <link rel="stylesheet" href="{% static 'css/broker_stats.css' %}">
+</head>
+<body class="broker-stats-page">
+
+{% include 'partials/navbar.html' %}
+
+
+<div class="broker-stats-header">
+    <div class="container">
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:6px;">
+            {% if broker.profile_image %}
+            <img src="{{ broker.profile_image.url }}" alt="{{ broker.business_name }}" style="width:56px;height:56px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,0.35);flex-shrink:0;">
+            {% else %}
+            <span style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#818CF8,#6D28D9);border:3px solid rgba(79,70,229,0.2);color:#fff;font-size:22px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">{{ broker.business_name|slice:":1"|upper }}</span>
+            {% endif %}
+            <div>
+                <h1 class="broker-stats-header-title" style="margin:0;">Performance Statistics</h1>
+                <p class="broker-stats-header-copy" style="margin:2px 0 0;">{{ broker.business_name }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container section">
+
+    
+    <div class="section-row">
+        <div class="section-head left"><h2>Overview</h2></div>
+    </div>
+    <div class="cards stats-grid broker-stats-overview-grid">
+        <div class="card-stat-card">
+            <div class="icon blue"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg></div>
+            <h3>{{ total_quotes }}</h3>
+            <p>Total Quotes <span class="broker-stats-change">{{ quotes_change }}</span></p>
+        </div>
+        <div class="card-stat-card">
+            <div class="icon green"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.78-.77-.78a5.4 5.4 0 0 0-7.65 7.65l1.06 1.06L12 21.23l7.77-7.94 1.06-1.06a5.4 5.4 0 0 0-.41-7.65z"/></svg></div>
+            <h3>{{ won_deals }}</h3>
+            <p>Won Deals <span class="broker-stats-change">{{ won_change }}</span></p>
+        </div>
+        <div class="card-stat-card">
+            <div class="icon violet"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg></div>
+            <h3>{{ win_rate }}%</h3>
+            <p>Win Rate <span class="broker-stats-change">{{ win_rate_change }}</span></p>
+        </div>
+        <div class="card-stat-card">
+            <div class="icon emerald"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+            <h3>${{ total_revenue|floatformat:2 }}</h3>
+            <p>Total Revenue <span class="broker-stats-change">{{ revenue_change }}</span></p>
+        </div>
+        <div class="card-stat-card">
+            <div class="icon blue"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="20" y2="10"/><line x1="18" x2="18" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="16"/></svg></div>
+            <h3>${{ avg_deal_value|floatformat:2 }}</h3>
+            <p>Avg Deal Value</p>
+        </div>
+        <div class="card-stat-card">
+            <div class="icon violet"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+            <h3>{{ avg_rating }}/5</h3>
+            <p>Average Rating</p>
+        </div>
+    </div>
+
+    
+    <div class="section-row">
+        <div class="section-head left"><h2>Monthly Performance</h2></div>
+    </div>
+    <div class="cards broker-stats-monthly-grid">
+        {% for month in monthly_stats %}
+        <div class="card broker-stats-month-card">
+            <p class="broker-stats-month-label">{{ month.month }}</p>
+            <div class="broker-stats-month-stack">
+                <div>
+                    <p class="broker-stats-month-value broker-stats-month-value--dark">{{ month.quotes }}</p>
+                    <p class="broker-stats-month-meta">Quotes</p>
+                </div>
+                <div>
+                    <p class="broker-stats-month-value broker-stats-month-value--green">{{ month.won }}</p>
+                    <p class="broker-stats-month-meta">Won</p>
+                </div>
+                <div>
+                    <p class="broker-stats-month-value broker-stats-month-value--purple">${{ month.revenue|floatformat:2 }}</p>
+                    <p class="broker-stats-month-meta">Revenue</p>
+                </div>
+                <div class="broker-stats-month-rate">
+                    <p class="broker-stats-month-rate-value">{{ month.win_percent }}%</p>
+                    <p class="broker-stats-month-rate-label">Win Rate</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    
+    {% if category_breakdown %}
+    <div class="section-row">
+        <div class="section-head left"><h2>Category Breakdown</h2></div>
+    </div>
+    <div class="card broker-stats-breakdown-card">
+        {% for cat in category_breakdown %}
+        <div class="broker-stats-breakdown-row">
+            <div class="broker-stats-breakdown-main">
+                <div class="icon blue broker-stats-breakdown-icon"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="20" y2="10"/><line x1="18" x2="18" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="16"/></svg></div>
+                <div>
+                    <p class="broker-stats-breakdown-title">{{ cat.category }}</p>
+                    <p class="broker-stats-breakdown-meta">{{ cat.deals }} deals</p>
+                </div>
+            </div>
+            <div class="broker-stats-breakdown-side">
+                <p class="broker-stats-breakdown-value">${{ cat.revenue|floatformat:2 }}</p>
+                <p class="broker-stats-breakdown-share">{{ cat.percentage }}%</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    
+    {% if recent_reviews %}
+    <div class="section-row">
+        <div class="section-head left"><h2>Recent Reviews</h2></div>
+    </div>
+    <div class="cards steps-grid broker-stats-reviews-grid">
+        {% for review in recent_reviews %}
+        <div class="card">
+            <div class="broker-stats-review-head">
+                <div class="avatar broker-stats-review-avatar">{{ review.customer.username|slice:":1"|upper }}</div>
+                <div>
+                    <p class="broker-stats-review-name">{{ review.customer.username }}</p>
+                    <p class="broker-stats-review-stars">{% for i in "12345" %}{% if forloop.counter <= review.rating %}&#9733;{% else %}&#9734;{% endif %}{% endfor %}</p>
+                </div>
+            </div>
+            <p class="broker-stats-review-comment">{{ review.comment|truncatechars:100 }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="broker-stats-footer-action">
+        <a href="{% url 'broker_dashboard' %}" class="btn btn-light">&larr; Back to Dashboard</a>
+    </div>
+
+</div>
+
+{% include 'partials/footer_broker.html' %}
+</body>
+</html>

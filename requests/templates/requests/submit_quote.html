@@ -1,0 +1,138 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Quote - BrokersHub</title>
+    <style>
+        input, textarea, select {
+            width:100%; padding:12px 14px; border:1.5px solid #dfe4f2;
+            border-radius:10px; font-size:14px; font-family:inherit;
+            color:#333; background:#fff; outline:none; transition:border-color .2s;
+        }
+        input:focus, textarea:focus { border-color:#5b48f2; }
+        label { display:block; font-size:13px; font-weight:600; color:#333; margin-bottom:6px; }
+        .form-group { margin-bottom:20px; }
+        .hint { font-size:12px; color:#62708f; margin-top:4px; }
+        .tips { background:#f0f2ff; border:1px solid #c7d0f8; border-radius:12px; padding:16px; }
+        .tips p { font-size:13px; font-weight:700; color:#3827c8; margin:0 0 8px; }
+        .tips li { font-size:13px; color:#5b48f2; margin:0 0 4px 16px; }
+        .two-col { display:grid; grid-template-columns:1fr 2fr; gap:24px; }
+        @media(max-width:700px){ .two-col{ grid-template-columns:1fr; } }
+    </style>
+</head>
+<body>
+
+{% include 'partials/navbar.html' %}
+
+
+<div style="background:linear-gradient(135deg,#3f65ff 0%,#5b48f2 48%,#7f35db 100%);padding:28px 0;width:100%;margin-top:20px;margin-top:20px;">
+    <div class="container">
+        <h1 style="color:#fff;font-size:26px;font-weight:700;margin:0 0 4px;">Submit Your Quote</h1>
+        <p style="color:rgba(255,255,255,.8);font-size:14px;margin:0;">Provide your best offer for this request</p>
+    </div>
+</div>
+
+<div class="container section">
+
+    {% if error %}
+    <div style="background:#fff0f0;border:1px solid #fcc;border-radius:10px;padding:12px 16px;color:#c53030;font-size:14px;margin-bottom:20px;">
+        {{ error }}
+    </div>
+    {% endif %}
+
+    <div class="two-col">
+
+        
+        <div class="card">
+            <h3 style="font-size:16px;font-weight:700;color:#222;margin:0 0 16px;">Request Details</h3>
+            <div>
+                <div style="padding:10px 0;border-bottom:1px solid #dfe4f2;">
+                    <p style="font-size:12px;color:#62708f;margin:0 0 2px;">Product</p>
+                    <p style="font-weight:600;color:#222;font-size:14px;margin:0;">{{ quote_request.product_name }}</p>
+                </div>
+                <div style="padding:10px 0;border-bottom:1px solid #dfe4f2;">
+                    <p style="font-size:12px;color:#62708f;margin:0 0 2px;">Category</p>
+                    <p style="font-weight:600;color:#222;font-size:14px;margin:0;">{{ quote_request.platform.category.name }}</p>
+                </div>
+                <div style="padding:10px 0;border-bottom:1px solid #dfe4f2;">
+                    <p style="font-size:12px;color:#62708f;margin:0 0 2px;">Platform</p>
+                    <p style="font-weight:600;color:#222;font-size:14px;margin:0;">{{ quote_request.platform.name }}</p>
+                </div>
+                <div style="padding:10px 0;border-bottom:1px solid #dfe4f2;">
+                    <p style="font-size:12px;color:#62708f;margin:0 0 2px;">City</p>
+                    <p style="font-weight:600;color:#222;font-size:14px;margin:0;">{{ quote_request.city.name }}</p>
+                </div>
+                <div style="padding:10px 0;border-bottom:1px solid #dfe4f2;">
+                    <p style="font-size:12px;color:#62708f;margin:0 0 2px;">Quotes Submitted</p>
+                    <p style="font-weight:600;color:#222;font-size:14px;margin:0;">{{ quotes_count }}</p>
+                </div>
+                {% if price_range.min_price and price_range.max_price %}
+                <div style="padding:10px 0;border-bottom:1px solid #dfe4f2;">
+                    <p style="font-size:12px;color:#62708f;margin:0 0 2px;">Price Range</p>
+                    <p style="font-weight:600;color:#15b86a;font-size:14px;margin:0;">${{ price_range.min_price }} - ${{ price_range.max_price }}</p>
+                </div>
+                {% endif %}
+                {% if quote_request.notes %}
+                <div style="padding:10px 0;">
+                    <p style="font-size:12px;color:#62708f;margin:0 0 4px;">Description</p>
+                    <p style="font-size:13px;color:#444;margin:0;line-height:1.6;">{{ quote_request.notes }}</p>
+                </div>
+                {% endif %}
+                {% if quote_request.product_url %}
+                <div style="padding:10px 0;">
+                    <a href="{{ quote_request.product_url }}" target="_blank" style="color:#5b48f2;font-size:13px;font-weight:600;">View Product -></a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        
+        <div class="card">
+            <form method="POST" action="/quote/{{ quote_request.id }}/">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label>Your Price (USD) *</label>
+                    <input type="number" name="total_price" required min="1" step="0.01" placeholder="e.g. 1150">
+                    {% if price_range.min_price %}
+                    <p class="hint">Current range: ${{ price_range.min_price }} - ${{ price_range.max_price }}</p>
+                    {% else %}
+                    <p class="hint">Be the first to submit a quote!</p>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label>Delivery Time (days) *</label>
+                    <input type="number" name="delivery_days" required min="1" placeholder="e.g. 3">
+                </div>
+
+                <div class="form-group">
+                    <label>Quote Description *</label>
+                    <textarea name="notes" required rows="5" placeholder="Describe your offer, what's included, any guarantees..."></textarea>
+                </div>
+
+                <div class="tips" style="margin-bottom:20px;">
+                    <p>Tips for winning quotes:</p>
+                    <ul>
+                        <li>Provide competitive pricing</li>
+                        <li>Be clear about delivery time</li>
+                        <li>Mention any guarantees you offer</li>
+                        <li>Highlight what makes your offer special</li>
+                    </ul>
+                </div>
+
+                <div style="display:flex;gap:12px;">
+                    <button type="submit" class="btn btn-light" style="flex:1;">Submit Quote</button>
+                    <a href="{% url 'broker_dashboard' %}" class="btn btn-secondary" style="background:#f0f0f0;color:#333;border-color:#dfe4f2;">Cancel</a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+{% include 'partials/footer_broker.html' %}
+</body>
+</html>

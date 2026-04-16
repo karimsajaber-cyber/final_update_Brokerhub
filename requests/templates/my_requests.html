@@ -1,0 +1,149 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Requests</title>
+    <link rel="stylesheet" href="{% static 'css/my_requests.css' %}">
+</head>
+<body>
+
+{% include 'partials/navbar.html' %}
+<link rel="stylesheet" href="{% static 'css/my_requests_cards.css' %}">
+
+<section class="page-header" style="width:100%;margin-top:20px;">
+    <div class="container">
+        <h1>My Requests</h1>
+        <p>Track the requests you submitted and check their current status.</p>
+    </div>
+</section>
+
+<section class="requests-section">
+    <div class="container">
+
+        {% if notice_message %}
+        <div class="notice-box">{{ notice_message }}</div>
+        {% endif %}
+
+        {% if customer_requests %}
+        <div class="myrq-grid">
+            {% for req in customer_requests %}
+            <div class="myrq-card">
+
+                <div class="myrq-card-top">
+                    <div class="myrq-avatar">
+                        {{ req.product_name|slice:":1"|upper }}
+                    </div>
+                    <div class="myrq-title-block">
+                        <p class="myrq-name">{{ req.product_name }}</p>
+                        <span class="myrq-badge myrq-badge-{{ req.status|lower }}">{{ req.status|title }}</span>
+                    </div>
+                    <a href="{% url 'customer_request_details' req.id %}" class="myrq-details-btn">View Details</a>
+                </div>
+
+                <div class="myrq-info">
+                    <div class="myrq-info-row">
+                        <span class="myrq-info-label">Platform</span>
+                        <span class="myrq-info-val">{{ req.platform.name }}</span>
+                    </div>
+                    <div class="myrq-info-row">
+                        <span class="myrq-info-label">Broker</span>
+                        <span class="myrq-info-val" style="display:flex;align-items:center;gap:8px;">
+                            {% if req.broker %}
+                                {% if req.broker.profile_image %}
+                                <img src="{{ req.broker.profile_image.url }}" alt="{{ req.broker.business_name }}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid rgba(91,72,242,0.18);">
+                                {% else %}
+                                <span style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#6e5bf7,#3f8cff);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">{{ req.broker.business_name|slice:":1"|upper }}</span>
+                                {% endif %}
+                                {{ req.broker.business_name }}
+                            {% else %}Not assigned{% endif %}
+                        </span>
+                    </div>
+                    <div class="myrq-info-row">
+                        <span class="myrq-info-label">City</span>
+                        <span class="myrq-info-val">{% if req.city %}{{ req.city.name }}{% else %}Not specified{% endif %}</span>
+                    </div>
+                    <div class="myrq-info-row">
+                        <span class="myrq-info-label">Created</span>
+                        <span class="myrq-info-val">{{ req.created_at|date:"M d, Y" }}</span>
+                    </div>
+                    {% if req.assigned_price %}
+                    <div class="myrq-info-row">
+                        <span class="myrq-info-label">Price</span>
+                        <span class="myrq-info-val myrq-info-val-price">${{ req.assigned_price }}</span>
+                    </div>
+                    {% endif %}
+                    {% if req.assigned_delivery %}
+                    <div class="myrq-info-row">
+                        <span class="myrq-info-label">Delivery</span>
+                        <span class="myrq-info-val">{{ req.assigned_delivery }} days</span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="myrq-footer">
+                    {% if req.status|lower == 'pending' %}
+                    <a href="{% url 'edit_request' req.id %}" class="myrq-btn myrq-btn-edit">Edit</a>
+                    <form action="{% url 'delete_request' req.id %}" method="POST" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="myrq-btn myrq-btn-delete">Delete</button>
+                    </form>
+
+                    {% elif req.status|lower == 'accepted' %}
+                    <a href="{% url 'chat_conversation' req.id %}" class="myrq-btn myrq-btn-rate">Open Chat</a>
+                    {% if req.can_contact_broker %}
+                    <a href="https://wa.me/970{{ req.broker.whatsapp_number|slice:'1:' }}" target="_blank" class="myrq-btn myrq-btn-whatsapp">Contact on WhatsApp</a>
+                    {% endif %}
+
+                    {% elif req.status|lower == 'completed' %}
+                    <a href="{% url 'chat_conversation' req.id %}" class="myrq-btn myrq-btn-rate">Open Chat</a>
+                    {% if req.can_rate_broker and req.review_quote_id %}
+                    <a href="/review/{{ req.review_quote_id }}/" class="myrq-btn myrq-btn-rate">Rate the Broker</a>
+                    {% endif %}
+
+                    {% elif req.status|lower == 'cancelled' %}
+                    {% if req.broker %}
+                    <a href="{% url 'chat_conversation' req.id %}" class="myrq-btn myrq-btn-rate">Open Chat</a>
+                    {% endif %}
+                    <div class="myrq-cancelled-msg">The broker cancelled your request.</div>
+                    <form action="{% url 'delete_request' req.id %}" method="POST" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="myrq-btn myrq-btn-remove">Remove</button>
+                    </form>
+
+                    {% elif req.broker %}
+                    <a href="{% url 'chat_conversation' req.id %}" class="myrq-btn myrq-btn-rate">Open Chat</a>
+
+                    {% else %}
+                    <span style="font-size:12px;color:#62708f;">Status: {{ req.status|title }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% else %}
+        <div class="empty-state">
+            <h2>No Requests Yet</h2>
+            <p>You haven't submitted any requests yet.</p>
+        </div>
+        {% endif %}
+
+    </div>
+</section>
+
+{% include 'partials/footer.html' %}
+
+
+    {% if request.session.role == 'customer' %}
+    <link rel="stylesheet" href="{% static 'requests/css/chatbot.css' %}">
+    {% include 'requests/chatbot_widget.html' %}
+    <script>
+        const chatSearchUrl = "{% url 'chatbot_search' %}";
+        const chatbotAutoOpen = false;
+    </script>
+    <script src="{% static 'requests/js/chatbot.js' %}"></script>
+    {% endif %}
+</body>
+</html>

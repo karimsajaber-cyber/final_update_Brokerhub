@@ -1,0 +1,330 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap');
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --muted: #62708f;
+    --primary: #5b48f2;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    background: #F8F7FF;
+    color: #27314f;
+}
+
+
+a {
+    text-decoration: none;
+}
+
+image {
+    display: block;
+    width: 100%;
+}
+
+.container {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+a {
+    color: white;
+    text-decoration: none;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.browse-header {
+    margin: 30px 0;
+}
+
+.browse-header h1 {
+    color: #1E1B4B;
+    margin-bottom: 5px;
+}
+
+.filters-form {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.filters-form select {
+    padding: 10px;
+    
+    border: 1px solid #ddd;
+}
+
+.filters-form button {
+    padding: 10px 15px;
+    background: #6a5cff;
+    color: white;
+    border: none;
+    
+    cursor: pointer;
+}
+
+
+
+
+.filters-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.filter-input,
+.filter-select {
+    padding: 10px;
+    
+    border: 1px solid #e8eaf2;
+    border-radius: 10px;
+}
+
+.filters-form {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.filter-input {
+    padding: 10px 12px;
+    
+    border: 1px solid #ddd;
+    width: 220px;
+    flex: 1 1 220px;
+}
+
+.filter-select {
+    padding: 10px;
+    
+    border: 1px solid #ddd;
+    min-width: 180px;
+    flex: 1 1 180px;
+}
+
+.filter-btn {
+    padding: 10px 15px;
+    border: none;
+    
+    background: linear-gradient(135deg, #5b48f2, #7f35db);
+    border-radius: 10px;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.filter-btn:hover {
+    transform: translateY(-2px);
+}
+
+
+
+.brokers-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+}
+
+
+.broker-card {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    transition: 0.3s;
+    min-width: 0;
+}
+
+.broker-card:hover {
+    transform: translateY(-2px);
+}
+
+
+.broker-avatar {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #818CF8, #6D28D9);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    font-weight: bold;
+}
+
+
+.broker-card h3 {
+    margin: 10px 0;
+}
+
+
+.broker-rating {
+    color: #f59e0b;
+    margin-bottom: 10px;
+}
+
+
+.broker-description {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+
+.broker-meta {
+    font-size: 13px;
+    color: #777;
+    margin-bottom: 15px;
+    line-height: 1.6;
+    word-break: break-word;
+}
+
+
+.btn {
+    text-decoration: none;
+    padding: 8px 15px;
+    
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, #4f46e5, #9333ea);
+    color: white;
+}
+
+
+.footer {
+    padding-top: 26px;
+    background: linear-gradient(135deg, #4338ca 0%, #5b48f2 50%, #7c3aed 100%);
+    border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+.footer-grid {
+    display: grid;
+    gap: 36px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: 90%;
+    max-width: 1100px;
+    margin: 0 auto;
+    align-items: start;
+}
+
+.footer h3 {
+    margin: 0 0 14px;
+    font-size: 1.05rem;
+    color: #27314f;
+}
+
+.footer-brand {
+    display: inline-block;
+    margin-bottom: 14px;
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.footer-text {
+
+    display: block;
+    margin: 0 0 10px;
+    color: rgba(255,255,255,0.65);
+    line-height: 1.7;
+}
+
+.footer-link {
+
+    display: block;
+    margin: 0 0 10px;
+    color: rgba(255,255,255,0.72);
+    line-height: 1.7;
+}
+
+.footer-link:hover {
+    color: #06B6D4;
+}
+
+.footer-bottom {
+    margin-top: 26px;
+    padding: 18px 16px 24px;
+    font-weight: bold;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.651);
+    border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+#resultsCount{
+    margin-left : 5px;
+    margin-top: 10px;
+    margin-bottom: 13px ; 
+    font-weight:bolder;
+    color: #5b48f2;
+}
+
+@media (max-width: 920px) {
+    .brokers-grid,
+    .footer-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    
+
+    
+
+    
+
+    
+
+    .filters-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-input,
+    .filter-select {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .brokers-grid,
+    .footer-grid {
+        grid-template-columns: 1fr;
+    }
+}

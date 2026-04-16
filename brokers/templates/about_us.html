@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us</title>
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/about-us.css' %}">
+</head>
+
+<body>
+    {% include 'partials/navbar.html' %}
+    <section class="hero">
+        <div class="container">
+            <div class="hero-row">
+                <div class="hero-text">
+                    <h2>Why BrokersHub?</h2>
+                    <ul>
+                        <li>Find trusted brokers easily</li>
+                        <li>Compare offers in one place</li>
+                        <li>Save time and avoid confusion</li>
+                        <li>Make smarter decisions faster</li>
+                    </ul>
+
+                    <p>
+                        One platform. Clear choices. Better deals.
+                    </p>
+                </div>
+
+                <div class="about-image">
+                    <img src="{% static 'images/about-us.jpg' %}" alt="BrokersHub team collaboration">
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+
+
+
+    <section class="contact-section">
+        <div class="container contact-container">
+            <div class="contact-info">
+                <h2>Start Getting Clients Today</h2>
+                <p>Join a network of trusted brokers and start
+                    receiving real customer requests.</p>
+                <p>Show your expertise, send competitive offers, and grow your business faster with BrokersHub.</p>
+                <p>find clients who are actively looking for your services.
+                    Save time and grow your business with less effort</p>
+
+                <div class="contact-features">
+                    <div class="feature-item">
+                        <span>✔</span>
+                        <p>Receive real customer requests</p>
+                    </div>
+
+                    <div class="feature-item">
+                        <span>✔</span>
+                        <p>Compare offers faster</p>
+                    </div>
+
+                    <div class="feature-item">
+                        <span>✔</span>
+                        <p>Grow with trusted brokers</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="contact-box">
+                <form action="{% url 'contact_us' %}" method="POST">
+                    {% csrf_token %}
+
+                    {% with errors=form_errors old=old_data %}
+                    <div class="input-group">
+                        <input type="text" name="name" placeholder="Your Name" value="{{ old.name|default:'' }}">
+                        {% if errors.name %}
+                        <span class="error-text">{{ errors.name }}</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="input-group">
+                        <input type="email" name="email" placeholder="Your Email" value="{{ old.email|default:'' }}">
+                        {% if errors.email %}
+                        <span class="error-text">{{ errors.email }}</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="input-group">
+                        <input type="text" name="whatsapp" placeholder="WhatsApp" value="{{ old.whatsapp|default:'' }}">
+                        {% if errors.whatsapp %}
+                        <span class="error-text">{{ errors.whatsapp }}</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="input-group">
+                        <textarea name="message" placeholder="Your Message">{{ old.message|default:'' }}</textarea>
+                        {% if errors.message %}
+                        <span class="error-text">{{ errors.message }}</span>
+                        {% endif %}
+                    </div>
+                    {% endwith %}
+
+                    <button type="submit">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    {% include 'partials/footer.html' %}
+    <script>
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.custom-alert');
+            alerts.forEach(alert => {
+                alert.style.opacity = '0';
+                alert.style.transform = 'translateX(30px)';
+            });
+        }, 3000);
+    </script>
+
+
+    {% if request.session.role == 'customer' %}
+    <link rel="stylesheet" href="{% static 'requests/css/chatbot.css' %}">
+    {% include 'requests/chatbot_widget.html' %}
+    <script>
+        const chatSearchUrl = "{% url 'chatbot_search' %}";
+        const chatbotAutoOpen = false;
+    </script>
+    <script src="{% static 'requests/js/chatbot.js' %}"></script>
+    {% endif %}
+</body>
+
+</html>

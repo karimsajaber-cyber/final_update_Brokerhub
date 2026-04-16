@@ -1,0 +1,163 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Broker Profile</title>
+    <link rel="stylesheet" href="{% static 'css/broker_profile.css' %}">
+</head>
+<body>
+    {% include 'partials/navbar.html' %}
+
+    <section class="hero" style="margin-top:20px;width:100%;">
+        <div class="hero-card">
+            <div class="hero-left">
+                <div class="avatar" style="overflow:hidden;padding:0;">
+                    {% if broker.profile_image %}
+                    <img src="{{ broker.profile_image.url }}" alt="{{ broker.business_name }}" style="width:100%;height:100%;object-fit:cover;">
+                    {% else %}
+                    {{ broker.business_name|slice:":1"|upper }}
+                    {% endif %}
+                </div>
+
+                <div class="hero-info">
+                    <span class="tag">Broker Profile</span>
+                    <h1>{{ broker.business_name }}</h1>
+
+                    <div class="info-row">
+                        {% if broker.is_verified %}
+                            <span class="verified-badge"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg> Verified Broker</span>
+                        {% endif %}
+                        <span class="rating">&#9733; {{ broker.average_rating|floatformat:1 }}</span>
+                        <span class="reviews">{{ broker.total_reviews }} reviews</span>
+                    </div>
+
+                    <p class="meta">
+                        {% if broker.city %}
+                            {{ broker.city.name }}
+                        {% else %}
+                            Location not added
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+
+            <div class="hero-right">
+                <a href="{% url 'create_request' %}?broker_id={{ broker.id }}" class="btn btn-primary">Contact Broker</a> 
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container stats-grid">
+            <div class="card stat-card">
+                <h3>{{ broker.total_reviews }}</h3>
+                <p>Total Reviews</p>
+            </div>
+
+            <div class="card stat-card">
+                <h3>{{ broker.average_rating|floatformat:1 }}/5</h3>
+                <p>Average Rating</p>
+            </div>
+
+            <div class="card stat-card">
+                <h3>
+                    {% if broker.is_verified %}
+                        Yes
+                    {% else %}
+                        No
+                    {% endif %}
+                </h3>
+                <p>Verified Status</p>
+            </div>
+
+            <div class="card stat-card">
+                <h3>&lt;2h</h3>
+                <p>Avg Response Time</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container content-grid">
+            <div class="card about-card">
+                <h2>About This Broker</h2>
+                <p>
+                    {% if broker.description %}
+                        {{ broker.description }}
+                    {% else %}
+                        This broker has not added a profile description yet.
+                    {% endif %}
+                </p>
+            </div>
+
+            <div class="card details-card">
+                <h2>Quick Details</h2>
+                <div class="detail-item">
+                    <span class="detail-label">Business Name</span>
+                    <span class="detail-value">{{ broker.business_name }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Location</span>
+                    <span class="detail-value">
+                        {% if broker.city %}
+                            {{ broker.city.name }}
+                        {% else %}
+                            Not specified
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Profile Access</span>
+                    <span class="detail-value">
+                        {% if broker.show_whatsapp_after_accept %}
+                            Shared after request acceptance
+                        {% else %}
+                            Private until approval
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <div class="card reviews-card">
+                <div class="section-head">
+                    <h2>Reviews</h2>
+                    <p>{% if broker.total_reviews > 0 %}{{ broker.total_reviews }} review{{ broker.total_reviews|pluralize }} &middot; Average rating: {{ broker.average_rating|floatformat:1 }}/5{% else %}No reviews yet{% endif %}</p>
+                </div>
+                {% if reviews %}
+                <div class="reviews-grid">
+                    {% for review in reviews %}
+                    <div class="review-item">
+                        <strong>{{ review.customer.username }}</strong>
+                        <span class="review-stars">
+                            {% for i in "12345" %}{% if forloop.counter <= review.rating %}&#9733;{% else %}&#9734;{% endif %}{% endfor %}
+                        </span>
+                        <p>{{ review.comment }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% elif broker.total_reviews == 0 %}
+                <p style="color:#62708f;text-align:center;padding:24px 0;">No reviews yet for this broker.</p>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    {% include 'partials/footer.html' %}
+
+    {% if request.session.role == 'customer' %}
+    <link rel="stylesheet" href="{% static 'requests/css/chatbot.css' %}">
+    {% include 'requests/chatbot_widget.html' %}
+    <script>
+        const chatSearchUrl = "{% url 'chatbot_search' %}";
+        const chatbotAutoOpen = false;
+    </script>
+    <script src="{% static 'requests/js/chatbot.js' %}"></script>
+    {% endif %}
+</body>
+</html>

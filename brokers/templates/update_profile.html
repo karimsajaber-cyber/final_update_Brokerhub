@@ -1,0 +1,160 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Profile | BrokersHub</title>
+    <link rel="stylesheet" href="{% static 'css/landing_page.css' %}">
+    <link rel="stylesheet" href="{% static 'css/update_profile.css' %}">
+</head>
+
+<body class="update-profile-page">
+    {% include 'partials/navbar.html' %}
+
+    <div class="update-profile-shell">
+        <div class="container">
+            <div class="glass-form-card">
+                <div class="form-header">
+                    <h2>Edit Profile</h2>
+                    <p class="update-profile-subtitle">Professional identity management</p>
+                </div>
+
+                {% if messages %}
+                    {% for message in messages %}
+                    <div class="status-message">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <div class="profile-image-section">
+                        <div class="image-outer-ring">
+                            {% if broker.profile_image %}
+                            <img src="{{ broker.profile_image.url }}" alt="Profile image" class="profile-preview">
+                            {% else %}
+                            <div class="no-image-placeholder">
+                                {{ broker.business_name|slice:":1"|upper }}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="upload-side-box">
+                            <label class="form-label upload-label">Upload New Image</label>
+                            <input type="file" name="profile_image" id="profileImageInput" class="form-control file-input-control" accept="image/*">
+                            <p id="imageValidationMsg" style="margin:6px 0 0;font-size:12px;color:#d64545;display:none;"></p>
+                            <p style="margin:4px 0 0;font-size:11px;color:#62708f;">Accepted: JPG, PNG, GIF, WebP · Max 5MB</p>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Business Name</label>
+                        <input type="text" name="business_name" class="form-control" value="{{ broker.business_name }}" placeholder="e.g., Al-Madina Real Estate" required>
+                    </div>
+
+                    <div class="details-grid">
+                        <div class="form-group">
+                            <label class="form-label">Years of Experience</label>
+                            <input type="number" name="experience_years" class="form-control" value="{{ broker.experience_years }}" placeholder="e.g. 7" min="0">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">City</label>
+                            <select name="city" class="form-control">
+                                <option value="">Select a city</option>
+                                {% for city in cities %}
+                                <option value="{{ city.id }}" {% if broker.city and broker.city.id == city.id %}selected{% endif %}>
+                                    {{ city.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">WhatsApp Number</label>
+                        <input type="text" name="whatsapp_number" class="form-control" value="{{ broker.whatsapp_number }}" placeholder="+970 5xx xxx xxx">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Professional Bio</label>
+                        <textarea name="description" class="form-control" placeholder="Briefly describe your services...">{{ broker.description }}</textarea>
+                    </div>
+
+                    <div class="actions-wrapper">
+                        <a href="{% url 'broker_landing' %}" class="btn-cancel">Cancel</a>
+                        <button type="submit" class="btn-save">Update Profile</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {% include 'partials/footer_broker.html' %}
+
+<script>
+(function () {
+    const fileInput = document.getElementById('profileImageInput');
+    const msg = document.getElementById('imageValidationMsg');
+    const form = document.querySelector('form');
+
+    const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    const MAX_SIZE_MB = 5;
+    const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
+
+    function showError(text) {
+        msg.textContent = text;
+        msg.style.display = 'block';
+        fileInput.value = '';
+    }
+
+    function clearError() {
+        msg.style.display = 'none';
+        msg.textContent = '';
+    }
+
+    fileInput.addEventListener('change', function () {
+        clearError();
+        const file = this.files[0];
+        if (!file) return;
+
+        if (!ALLOWED_TYPES.includes(file.type)) {
+            showError('❌ Only image files are allowed (JPG, PNG, GIF, WebP).');
+            return;
+        }
+
+        if (file.size > MAX_SIZE_BYTES) {
+            const sizeMB = (file.size / 1024 / 1024).toFixed(1);
+            showError(`❌ Image is ${sizeMB}MB — maximum allowed size is ${MAX_SIZE_MB}MB.`);
+            return;
+        }
+
+        // Preview
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const preview = document.querySelector('.profile-preview');
+            if (preview) preview.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+
+    form.addEventListener('submit', function (e) {
+        if (fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+            if (!ALLOWED_TYPES.includes(file.type) || file.size > MAX_SIZE_BYTES) {
+                e.preventDefault();
+                if (!ALLOWED_TYPES.includes(file.type)) {
+                    showError('❌ Only image files are allowed (JPG, PNG, GIF, WebP).');
+                } else {
+                    showError(`❌ Image exceeds the ${MAX_SIZE_MB}MB limit.`);
+                }
+            }
+        }
+    });
+})();
+</script>
+</body>
+
+</html>

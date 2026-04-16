@@ -1,0 +1,79 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Shopping Assistant - BrokersHub</title>
+    <link rel="stylesheet" href="{% static 'css/landing_page.css' %}">
+    <link rel="stylesheet" href="{% static 'requests/css/chatbot.css' %}">
+    <link rel="stylesheet" href="{% static 'requests/css/assistant_page.css' %}">
+</head>
+<body>
+    {% include 'partials/navbar.html' %}
+
+    <main class="assistant-page">
+        <section class="assistant-page-hero">
+            <div class="container assistant-page-hero-inner">
+                <div>
+                    <span class="assistant-page-kicker">AI shopping assistant</span>
+                    <h1>Compare products with your broker request in mind</h1>
+                    <p>Continue the product conversation, review the found options, then choose a broker when you are ready.</p>
+                </div>
+                <a href="{% url 'landing' %}" class="assistant-return-link">Return to home</a>
+            </div>
+        </section>
+
+        <section class="container assistant-page-layout">
+            <div class="assistant-page-chat">
+                <div class="assistant-page-chat-header">
+                    <div>
+                        <h2>Assistant conversation</h2>
+                        <p>Amazon, Shein, and Temu comparison support</p>
+                    </div>
+                </div>
+
+                <div id="chat-box" class="chat-box assistant-page-chat-box">
+                    <div class="msg-bubble msg-bubble-ai">
+                        <div class="ai-avatar">AI</div>
+                        <div class="ai-bubble">
+                            <p>Hi. I can continue from the product result or help you search for another product.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-input-row assistant-page-input-row">
+                    <input type="text" id="chat-input" class="chat-input" placeholder="Ask about another product or refine this one...">
+                    <button type="button" id="chat-send" class="assistant-send">Send</button>
+                </div>
+                <p class="chat-footer-note">Powered by AI. Product prices from live or estimated sources may change.</p>
+            </div>
+
+            <aside class="assistant-page-side">
+                <div class="assistant-page-categories">
+                    <p>Browse by category</p>
+                    <div class="assistant-categories-list">
+                        <button type="button" class="cat-btn" data-category="Shopping">Shopping</button>
+                        <button type="button" class="cat-btn" data-category="Electronics">Electronics</button>
+                        <button type="button" class="cat-btn" data-category="Fashion">Fashion</button>
+                        <button type="button" class="cat-btn" data-category="Home and Living">Home &amp; Living</button>
+                        <button type="button" class="cat-btn" data-category="Sports">Sports</button>
+                    </div>
+                </div>
+
+                <div id="results-area" class="assistant-results assistant-page-results" hidden>
+                    <div id="results-container"></div>
+                </div>
+            </aside>
+        </section>
+    </main>
+
+    {% include 'partials/footer.html' %}
+
+    {{ initial_payload|json_script:"assistant-initial-payload" }}
+    <script>
+        const chatSearchUrl = "{% url 'chatbot_search' %}";
+    </script>
+    <script src="{% static 'requests/js/assistant_page.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,142 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Details</title>
+    <link rel="stylesheet" href="{% static 'css/broker_request_details.css' %}">
+</head>
+
+<body>
+    {% include 'partials/navbar.html' %}
+
+    <section class="page-header" style="width:100%;margin-top:20px;">
+        <div class="container">
+            <h1>Request Details</h1>
+            <p>Review the assigned customer request and decide whether to accept or reject it.</p>
+        </div>
+    </section>
+
+    <section class="details-section">
+        <div class="container details-wrap">
+            {% if notice_message %}
+            <div class="notice-box">{{ notice_message }}</div>
+            {% endif %}
+
+            <div class="details-card">
+                <div class="details-top">
+                    <div>
+                        <span class="details-tag">Assigned Request</span>
+                        <h2>{{ request_item.product_name }}</h2>
+                    </div>
+                    <span class="request-status">{{ request_item.status|title }}</span>
+                </div>
+
+                <div class="details-grid">
+                    <div class="details-block">
+                        <h3>Customer Information</h3>
+                        <p><strong>Username:</strong> {{ request_item.customer.username }}</p>
+                        <p><strong>Email:</strong> {{ request_item.customer.email }}</p>
+                        <p><strong>Phone:</strong> {{ request_item.customer.phone }}</p>
+                    </div>
+
+                    <div class="details-block">
+                        <h3>Request Information</h3>
+                        {% if request_item.broker and request_item.broker.profile_image %}
+                        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+                            <img src="{{ request_item.broker.profile_image.url }}" alt="{{ request_item.broker.business_name }}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid rgba(91,72,242,0.2);">
+                            <span style="font-size:13px;font-weight:600;color:#27314f;">{{ request_item.broker.business_name }}</span>
+                        </div>
+                        {% endif %}
+                        <p><strong>Platform:</strong> {{ request_item.platform.name }}</p>
+                        <p><strong>City:</strong> {% if request_item.city %}{{ request_item.city.name }}{% else %}Not specified{% endif %}</p>
+                        <p><strong>Created:</strong> {{ request_item.created_at|date:"M d, Y" }}</p>
+                    </div>
+                </div>
+
+                {% if request_item.product_url %}
+                <div class="details-block">
+                    <h3>Product URL</h3>
+                    <a href="{{ request_item.product_url }}" target="_blank" style="color:#5b48f2;font-weight:600;font-size:14px;word-break:break-all;">{{ request_item.product_url }}</a>
+                </div>
+                {% endif %}
+
+                <div class="details-block notes-block">
+                    <h3>Customer Description</h3>
+                    <p class="request-notes">
+                        {% if request_item.notes %}
+                            {{ request_item.notes }}
+                        {% else %}
+                            No description was added for this request.
+                        {% endif %}
+                    </p>
+                </div>
+
+                {% if request_item.status|lower == 'accepted' and request_item.broker %}
+                <div class="success-box">
+                    <p>Your WhatsApp number is now visible to the customer on their My Requests page.</p>
+                </div>
+                <div style="margin-top:16px;text-align:right;">
+                    <form action="{% url 'broker_request_details' request_item.id %}" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="action_type" value="complete">
+                        <button type="submit" class="accept-btn" style="background:linear-gradient(135deg,#3f65ff,#5b48f2);">
+                            Mark as Completed
+                        </button>
+                    </form>
+                </div>
+                {% endif %}
+
+                {% if request_item.status|lower == 'completed' %}
+                <div class="danger-box">
+                    <div>
+                        <h3>Delete Completed Request</h3>
+                        <p>This request is completed. You can remove it from the broker side if you no longer want it listed.</p>
+                    </div>
+                    <form action="{% url 'broker_delete_request' request_item.id %}" method="POST" onsubmit="return confirm('We recommend you to keep all requests for history tracking, delete anyway?');">
+                        {% csrf_token %}
+                        <button type="submit" class="delete-btn">Delete Request</button>
+                    </form>
+                </div>
+                {% endif %}
+
+                {% if request_item.status|lower == 'pending' or request_item.status|lower == 'quoted' %}
+                <form action="{% url 'broker_request_details' request_item.id %}" method="POST">
+                    {% csrf_token %}
+                    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px;">
+                        <div>
+                            <label style="display:block;font-size:13px;font-weight:600;color:#333;margin-bottom:6px;">Price (USD) *</label>
+                            <input type="number" name="price" min="1" step="0.01" placeholder="e.g. 150" required
+                                value="{% if broker_quote %}{{ broker_quote.total_price }}{% endif %}"
+                                style="width:180px;padding:10px 12px;border:1.5px solid #dfe4f2;border-radius:8px;font-size:14px;font-family:inherit;outline:none;">
+                        </div>
+                        <div>
+                            <label style="display:block;font-size:13px;font-weight:600;color:#333;margin-bottom:6px;">Delivery Days *</label>
+                            <input type="number" name="delivery_days" min="1" placeholder="e.g. 3" required
+                                value="{% if broker_quote %}{{ broker_quote.delivery_days }}{% endif %}"
+                                style="width:180px;padding:10px 12px;border:1.5px solid #dfe4f2;border-radius:8px;font-size:14px;font-family:inherit;outline:none;">
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:12px;align-items:center;">
+                        <input type="hidden" name="action_type" id="action_type" value="">
+                        <button type="submit" class="accept-btn" onclick="document.getElementById('action_type').value='accept'">Accept Request</button>
+                        <button type="submit" class="reject-btn" onclick="document.getElementById('action_type').value='reject'">Reject Request</button>
+                    </div>
+                </form>
+                {% endif %}
+
+                <div class="back-row">
+                    <a href="{% url 'chat_conversation' request_item.id %}" class="back-link">Open Chat</a>
+                    <a href="{% url 'broker_requests' %}" class="back-link">Back to Broker Requests</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {% include 'partials/footer_broker.html' %}
+
+</body>
+
+</html>

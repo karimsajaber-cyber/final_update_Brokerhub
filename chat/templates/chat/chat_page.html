@@ -1,0 +1,123 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+    <link rel="stylesheet" href="{% static 'css/landing_page.css' %}">
+    <link rel="stylesheet" href="{% static 'chat/css/chat.css' %}">
+</head>
+<body>
+    {% include 'partials/navbar.html' %}
+
+    <section class="chat-shell">
+        <div class="container chat-shell__container">
+            <aside class="chat-sidebar">
+                <div class="chat-sidebar__head">
+                    <p class="chat-kicker">Private Messages</p>
+                    <h1>Chat</h1>
+                    <p class="chat-sidebar__copy">Each request keeps its own customer and broker conversation.</p>
+                </div>
+
+                <div class="chat-conversation-list">
+                    {% if conversation_cards %}
+                        {% for card in conversation_cards %}
+                            <a href="{% url 'chat_conversation' card.request_id %}" class="chat-conversation-card {% if card.is_active %}is-active{% endif %}">
+                                <div class="chat-conversation-card__top">
+                                    <div style="display:flex;align-items:center;gap:8px;min-width:0;">
+                                        {% if card.partner_image_url %}
+                                        <img src="{{ card.partner_image_url }}" alt="{{ card.partner }}" style="width:34px;height:34px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid rgba(91,72,242,0.18);">
+                                        {% else %}
+                                        <span style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#6e5bf7,#3f8cff);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">{{ card.partner|slice:":1"|upper }}</span>
+                                        {% endif %}
+                                        <strong style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ card.partner }}</strong>
+                                    </div>
+                                    {% if card.unread_count %}
+                                        <span class="chat-badge">{{ card.unread_count }}</span>
+                                    {% endif %}
+                                </div>
+                                <p>{{ card.title }}</p>
+                                <div class="chat-conversation-card__meta">
+                                    <span>{{ card.platform }}</span>
+                                    <span>{{ card.status }}</span>
+                                </div>
+                            </a>
+                        {% endfor %}
+                    {% else %}
+                        <div class="chat-empty-card">
+                            <h2>No chats yet</h2>
+                            <p>Your conversations will appear here once a broker and customer are connected on a request.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </aside>
+
+            <main class="chat-panel">
+                {% if active_request %}
+                    <div
+                        id="chatApp"
+                        class="chat-app"
+                        data-fetch-url="{% url 'fetch_messages' active_request.id %}"
+                        data-send-url="{% url 'send_message' active_request.id %}"
+                        data-report-url="{% url 'create_report' %}"
+                        data-current-user-id="{{ chat_user.id }}"
+                    >
+                        <header class="chat-panel__head">
+                            <div style="display:flex;align-items:center;gap:14px;">
+                                {% if chat_partner_image_url %}
+                                <img src="{{ chat_partner_image_url }}" alt="{{ chat_partner_label }}" style="width:48px;height:48px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid rgba(91,72,242,0.2);">
+                                {% else %}
+                                <span style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#6e5bf7,#3f8cff);color:#fff;font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">{{ chat_partner_label|slice:":1"|upper }}</span>
+                                {% endif %}
+                                <div>
+                                    <p class="chat-kicker">Request Conversation</p>
+                                    <h2>{{ chat_partner_label }}</h2>
+                                    <p class="chat-panel__sub">{{ active_request.product_name }} - {{ active_request.status|title }}</p>
+                                </div>
+                            </div>
+                            <a href="{% if chat_user.role == 'broker' %}{% url 'broker_request_details' active_request.id %}{% else %}{% url 'customer_request_details' active_request.id %}{% endif %}" class="chat-details-link">View Request</a>
+                        </header>
+
+                        <section id="messagesList" class="chat-messages"></section>
+
+                        <form id="chatForm" class="chat-composer" method="post">
+                            {% csrf_token %}
+                            <input id="chatInput" type="text" name="content" maxlength="2000" placeholder="Write a message..." autocomplete="off">
+                            <button type="submit">Send</button>
+                        </form>
+                    </div>
+                {% else %}
+                    <div class="chat-empty-stage">
+                        <p class="chat-kicker">Ready to Chat</p>
+                        <h2>Select a conversation</h2>
+                        <p>Choose a request from the left to open its private chat.</p>
+                    </div>
+                {% endif %}
+            </main>
+        </div>
+    </section>
+
+    <div id="reportModal" class="report-modal" hidden>
+        <div class="report-modal__backdrop" data-close-report></div>
+        <div class="report-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="reportTitle">
+            <div class="report-modal__head">
+                <h3 id="reportTitle">Report message</h3>
+                <button type="button" class="report-close" data-close-report>&times;</button>
+            </div>
+            <form id="reportForm" class="report-form">
+                <input type="hidden" id="reportMessageId" name="message_id">
+                <label for="reportReason">Reason</label>
+                <textarea id="reportReason" name="reason" rows="4" placeholder="Write a short reason (optional)."></textarea>
+                <p id="reportFeedback" class="report-feedback"></p>
+                <div class="report-actions">
+                    <button type="button" class="report-secondary" data-close-report>Cancel</button>
+                    <button type="submit" class="report-primary">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="{% static 'chat/js/chat.js' %}"></script>
+</body>
+</html>

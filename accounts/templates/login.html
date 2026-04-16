@@ -1,0 +1,70 @@
+{% load static %} 
+<!DOCTYPE html> 
+<html lang="en"> 
+<head> 
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>Login</title> 
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}"> 
+</head> 
+<body> 
+    <div class="auth-container"> 
+        <div class="auth-card"> 
+            <h1 class="auth-title">{{ auth_title }}</h1> 
+            <p class="auth-text">{{ auth_text }}</p> 
+
+            {% if error_message %} 
+            <div class="error-box">{{ error_message }}</div> 
+            {% endif %} 
+
+            <form method="POST" class="auth-form" autocomplete="off"> 
+                {% csrf_token %} 
+                <input type="hidden" name="next" value="{{ next }}"> 
+                {% if active_role %}
+                <input type="hidden" name="role" value="{{ active_role }}"> 
+                {% endif %}
+                <input type="text" name="fake_username" autocomplete="username" class="hidden-auth-field" tabindex="-1" aria-hidden="true"> 
+                <input type="password" name="fake_password" autocomplete="current-password" class="hidden-auth-field" tabindex="-1" aria-hidden="true"> 
+
+                <div class="form-group"> 
+                    <label>Username</label> 
+                    <input type="text" name="username" id="loginUsername" autocomplete="off" autocapitalize="none" spellcheck="false" readonly onfocus="this.removeAttribute('readonly');"> 
+                </div> 
+
+                <div class="form-group"> 
+                    <label>Password</label> 
+                    <input type="password" name="password" id="loginPassword" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly');"> 
+                </div> 
+
+                <button type="submit" class="submit-btn">Login</button> 
+            </form> 
+
+            {% if helper_message %} 
+            <div class="info-box">{{ helper_message }}</div> 
+            {% endif %} 
+
+            {% if active_role != 'broker' %}
+            <p class="switch-text"> 
+                New here? <a href="{% url 'register' %}" class="switch-link">Create an account</a> 
+            </p> 
+            {% endif %} 
+        </div> 
+    </div> 
+    <script> 
+        const loginUsernameField = document.getElementById('loginUsername');
+        const loginPasswordField = document.getElementById('loginPassword');
+
+        function clearVisibleLoginFields() {
+            if (loginUsernameField) {
+                loginUsernameField.value = '';
+            }
+            if (loginPasswordField) {
+                loginPasswordField.value = '';
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', clearVisibleLoginFields);
+        window.addEventListener('pageshow', clearVisibleLoginFields);
+    </script> 
+</body> 
+</html> 

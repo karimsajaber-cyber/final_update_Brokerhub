@@ -1,0 +1,118 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrokersHub - Broker Portal</title>
+    <link rel="stylesheet" href="{% static 'css/landing_page.css' %}">
+</head>
+<body>
+    {% include 'partials/navbar.html' %}
+
+    <section class="hero" style="width:100%;margin-top:20px;">
+        <div class="container">
+            <div class="hero-row">
+                <div class="hero-text">
+                    <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+                        {% if broker and broker.profile_image %}
+                        <img src="{{ broker.profile_image.url }}" alt="{{ broker.business_name }}" style="width:52px;height:52px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,0.4);">
+                        {% elif broker %}
+                        <span style="width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,0.2);border:3px solid rgba(255,255,255,0.4);color:#fff;font-size:20px;font-weight:700;display:flex;align-items:center;justify-content:center;">{{ broker.business_name|slice:":1"|upper }}</span>
+                        {% endif %}
+                        {% if broker %}<span style="color:rgba(255,255,255,0.9);font-size:14px;font-weight:600;">{{ broker.business_name }}</span>{% endif %}
+                    </div>
+                    <span class="tag">Your broker portal — manage & grow</span>
+                    <h1>Manage Requests, Win More Deals</h1>
+                    <p>
+                        View incoming customer requests, submit competitive quotes, track your performance, and grow your business — all in one place.
+                    </p>
+                    <div class="hero-actions">
+                        <a href="{% url 'broker_requests' %}" class="btn btn-primary">View Requests</a>
+                        <a href="{% url 'chat_home' %}" class="btn btn-light">Customer Chats</a>
+                        <a href="{% url 'update_broker_profile' %}" class="btn btn-light">Update Profile</a>
+                    </div>
+                </div>
+                <div class="hero-video">
+                    <video autoplay muted loop playsinline>
+                        <source src="{% static 'videos/BokerHub.mp4' %}" type="video/mp4">
+                        Your browser does not support this video format.
+                    </video>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <div class="cards stats-grid">
+                <div class="card stat-card">
+                    <div class="icon blue"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg></div>
+                    <h3>{{ open_requests }}+</h3>
+                    <p>Open Requests</p>
+                </div>
+                <div class="card stat-card">
+                    <div class="icon amber"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+                    <h3>&lt;2h</h3>
+                    <p>Avg Response Time</p>
+                </div>
+                <div class="card stat-card">
+                    <div class="icon green"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.78-.77-.78a5.4 5.4 0 0 0-7.65 7.65l1.06 1.06L12 21.23l7.77-7.94 1.06-1.06a5.4 5.4 0 0 0-.41-7.65z"/></svg></div>
+                    <h3>10K+</h3>
+                    <p>Deals Completed</p>
+                </div>
+                <div class="card stat-card">
+                    <div class="icon violet"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+                    <h3>4.8/5</h3>
+                    <p>Average Rating</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section work">
+        <div class="container">
+            <div class="section-head">
+                <h2>How It Works for Brokers</h2>
+                <p>Three simple steps to win more deals</p>
+            </div>
+            <div class="cards steps-grid">
+                <div class="card step-card">
+                    <div class="icon blue"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg></div>
+                    <h3>Browse Requests</h3>
+                    <p>See all open customer requests and pick the ones that match your expertise.</p>
+                </div>
+                <div class="card step-card">
+                    <div class="icon violet"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></div>
+                    <h3>Submit a Quote</h3>
+                    <p>Send your best offer with delivery time and details to win the deal.</p>
+                </div>
+                <div class="card step-card">
+                    <div class="icon green"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m9 12 2 2 4-4"/></svg></div>
+                    <h3>Complete & Earn</h3>
+                    <p>Get accepted, deliver the product, and build your reputation on the platform.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <div class="cards" style="grid-template-columns:1fr 1fr;gap:24px;">
+                <div class="card" style="background:linear-gradient(135deg,#3f65ff,#7f35db);border:none;">
+                    <h3 style="color:#fff;margin:0 0 10px;">Ready to grow your business?</h3>
+                    <p style="color:rgba(255,255,255,.85);margin:0 0 18px;line-height:1.6;">New customer requests are waiting for your quotes right now.</p>
+                    <a href="{% url 'broker_requests' %}" class="btn btn-primary">View All Requests</a>
+                </div>
+                <div class="card">
+                    <h3 style="margin:0 0 10px;">Track Your Performance</h3>
+                    <p style="color:#62708f;margin:0 0 18px;line-height:1.6;">Monitor your win rate, revenue, and customer reviews in real time.</p>
+                    <a href="{% url 'broker_stats' %}" class="btn btn-light">View Statistics</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {% include 'partials/footer_broker.html' %}
+</body>
+</html>

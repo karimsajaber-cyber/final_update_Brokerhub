@@ -1,0 +1,24 @@
+<footer class="footer">
+    <div class="container footer-grid">
+        <div>
+            <a href="{% url 'landing' %}" class="brand footer-brand">BrokersHub</a>
+            <p class="footer-text">Connecting customers with trusted brokers for smarter and faster transactions.</p>
+        </div>
+        <div>
+            <h3>Quick Links</h3>
+            <a href="{% url 'landing' %}" class="footer-link">Home</a>
+            <a href="{% url 'browse_brokers' %}" class="footer-link">Browse Brokers</a>
+            <a href="{% url 'about' %}" class="footer-link">About Us</a>
+        </div>
+        <div>
+            <h3>Contact Info</h3>
+            <p class="footer-text">Email: info@brokershub.com</p>
+            <p class="footer-text">Phone: +1 (555) 123-4567</p>
+            <p class="footer-text">Support: Mon - Fri, 9AM - 6PM</p>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2026 BrokersHub. All rights reserved.</p>
+    </div>
+</footer>
+{% include 'partials/navbar_script.html' %}
