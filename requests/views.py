@@ -17,13 +17,13 @@ from reviews.models import Review
 from core.models import Platform
 
 
-GROQ_API_KEY    = settings.GROQ_API_KEY
-GROQ_API_URL    = settings.GROQ_API_URL
-GROQ_MODEL      = settings.GROQ_MODEL
-RAPIDAPI_KEY    = settings.RAPIDAPI_KEY
+# ── API Settings ────────────────────────────────────────────────
+GROQ_API_KEY = settings.GROQ_API_KEY
+GROQ_API_URL = settings.GROQ_API_URL
+GROQ_MODEL = settings.GROQ_MODEL
+
+RAPIDAPI_KEY = settings.RAPIDAPI_KEY
 AMAZON_API_HOST = settings.AMAZON_API_HOST
-SHEIN_API_HOST  = settings.SHEIN_API_HOST
-TEMU_API_HOST   = settings.TEMU_API_HOST
 BROKER_DELETE_SNAPSHOT_SESSION_KEY = 'broker_deleted_request_snapshot'
 
 
@@ -649,104 +649,261 @@ def _detect_category(history, current_message):
     return ''
 
 
-def do_search(product_name, original_message, groq_headers, detected_category='', request=None, source='landing_widget'):
+def do_search(
+    product_name,
+    original_message,
+    groq_headers,
+    detected_category=None,
+    request=None,
+    source=None,
+):
     amazon_results = []
-    amazon_price   = None
-    try:
-        amazon_res  = httpx.get(
-            f'https://{AMAZON_API_HOST}/search-v2',
-            headers={'X-RapidAPI-Key': RAPIDAPI_KEY, 'X-RapidAPI-Host': AMAZON_API_HOST},
-            params={'q': product_name, 'country': 'us', 'limit': '3'},
-            timeout=10
-        )
-        amazon_data = amazon_res.json()
-        if amazon_data.get('status') == 'OK':
-            for item in amazon_data.get('data', {}).get('products', [])[:3]:
-                price_str = item.get('offer', {}).get('price', '')
-                amazon_results.append({
-                    'platform': 'Amazon', 'name': item.get('product_title', ''),
-                    'price': price_str, 'url': item.get('product_url', ''),
-                    'image': item.get('product_photos', [''])[0], 'note': '',
-                })
-                if not amazon_price and price_str:
-                    try: amazon_price = float(price_str.replace('$', '').replace(',', '').strip())
-                    except: pass
-    except Exception as e:
-        print("AMAZON ERROR:", e)
+    amazon_price = None
 
-    shein_results = []
+    # Amazon product search
     try:
-        shein_res  = httpx.post(GROQ_API_URL, headers=groq_headers, json={
-            'model': GROQ_MODEL,
-            'messages': [
-                {'role': 'system', 'content': 'Estimate if this product is sold on Shein and its price. Return ONLY JSON: {"available": true, "price": "$25.99", "note": "Estimated price"} or {"available": false}'},
-                {'role': 'user', 'content': f'Product: {product_name}'}
-            ], 'max_tokens': 60,
-        }, timeout=10)
-        shein_data = json.loads(shein_res.json()['choices'][0]['message']['content'])
+        amazon_res = httpx.get(
+            f'https://{AMAZON_API_HOST}/search',
+            headers={
+                'X-RapidAPI-Key': RAPIDAPI_KEY,
+                'X-RapidAPI-Host': AMAZON_API_HOST,
+            },
+            params={
+                'query': product_name,
+                'page': '1',
+                'country': 'US',
+                'sort_by': 'RELEVANCE',
+                'product_condition': 'ALL',
+            },
+            timeout=15,
+        )
+
+        amazon_res.raise_for_status()
+        amazon_data = amazon_res.json()
+
+        if amazon_data.get('status') == 'OK':
+            products = amazon_data.get('data', {}).get('products', [])
+
+            for item in products[:3]:
+                price_str = (
+                    item.get('product_price')
+                    or item.get('product_minimum_offer_price')
+                    or ''
+                )
+
+                amazon_results.append({
+                    'platform': 'Amazon',
+                    'name': item.get('product_title', ''),
+                    'price': price_str,
+                    'url': item.get('product_url', ''),
+                    'image': item.get('product_photo', ''),
+                    'note': '',
+                })
+
+                if amazon_price is None and price_str:
+                    try:
+                        clean_price = (
+                            str(price_str)
+                            .replace('$', '')
+                            .replace(',', '')
+                            .strip()
+                        )
+                        amazon_price = float(clean_price)
+                    except (ValueError, TypeError):
+                        pass
+
+    except httpx.HTTPStatusError as error:
+        print(
+            'AMAZON HTTP ERROR:',
+            error.response.status_code,
+            error.response.text[:500],
+        )
+
+    except Exception as error:
+        print('AMAZON ERROR:', error)
+
+    # Shein estimated result
+    shein_results = []
+
+    try:
+        shein_res = httpx.post(
+            GROQ_API_URL,
+            headers=groq_headers,
+            json={
+                'model': GROQ_MODEL,
+                'messages': [
+                    {
+                        'role': 'system',
+                        'content': (
+                            'Estimate whether this product is sold on Shein '
+                            'and its likely price. Return only valid JSON: '
+                            '{"available": true, "price": "$25.99", '
+                            '"note": "Estimated price"} or '
+                            '{"available": false}.'
+                        ),
+                    },
+                    {
+                        'role': 'user',
+                        'content': f'Product: {product_name}',
+                    },
+                ],
+                'max_tokens': 60,
+            },
+            timeout=10,
+        )
+
+        shein_res.raise_for_status()
+
+        shein_content = (
+            shein_res.json()['choices'][0]['message']['content']
+            .replace('```json', '')
+            .replace('```', '')
+            .strip()
+        )
+
+        shein_data = json.loads(shein_content)
+
         if shein_data.get('available'):
             shein_results.append({
-                'platform': 'Shein', 'name': product_name,
+                'platform': 'Shein',
+                'name': product_name,
                 'price': shein_data.get('price', 'N/A'),
-                'url': f'https://www.shein.com/search?q={product_name.replace(" ", "+")}',
-                'image': '', 'note': shein_data.get('note', 'Estimated price'),
+                'url': (
+                    'https://www.shein.com/search?q='
+                    f'{product_name.replace(" ", "+")}'
+                ),
+                'image': '',
+                'note': shein_data.get(
+                    'note',
+                    'Estimated price',
+                ),
             })
-    except Exception as e:
-        print("SHEIN ERROR:", e)
 
+    except Exception as error:
+        print('SHEIN ERROR:', error)
+
+    # Temu estimated result
     temu_results = []
+
     try:
-        temu_res  = httpx.post(GROQ_API_URL, headers=groq_headers, json={
-            'model': GROQ_MODEL,
-            'messages': [
-                {'role': 'system', 'content': 'Estimate if this product is sold on Temu and its price (usually 30-60% cheaper than Amazon). Return ONLY JSON: {"available": true, "price": "$15.99", "note": "Estimated price"} or {"available": false}'},
-                {'role': 'user', 'content': f'Product: {product_name}. Amazon price: ${amazon_price or "unknown"}'}
-            ], 'max_tokens': 60,
-        }, timeout=10)
-        temu_data = json.loads(temu_res.json()['choices'][0]['message']['content'])
+        temu_res = httpx.post(
+            GROQ_API_URL,
+            headers=groq_headers,
+            json={
+                'model': GROQ_MODEL,
+                'messages': [
+                    {
+                        'role': 'system',
+                        'content': (
+                            'Estimate whether this product is sold on Temu '
+                            'and its likely price. Return only valid JSON: '
+                            '{"available": true, "price": "$15.99", '
+                            '"note": "Estimated price"} or '
+                            '{"available": false}.'
+                        ),
+                    },
+                    {
+                        'role': 'user',
+                        'content': (
+                            f'Product: {product_name}. '
+                            f'Amazon price: ${amazon_price or "unknown"}'
+                        ),
+                    },
+                ],
+                'max_tokens': 60,
+            },
+            timeout=10,
+        )
+
+        temu_res.raise_for_status()
+
+        temu_content = (
+            temu_res.json()['choices'][0]['message']['content']
+            .replace('```json', '')
+            .replace('```', '')
+            .strip()
+        )
+
+        temu_data = json.loads(temu_content)
+
         if temu_data.get('available'):
             temu_results.append({
-                'platform': 'Temu', 'name': product_name,
+                'platform': 'Temu',
+                'name': product_name,
                 'price': temu_data.get('price', 'N/A'),
-                'url': f'https://www.temu.com/search?q={product_name.replace(" ", "+")}',
-                'image': '', 'note': temu_data.get('note', 'Estimated price'),
+                'url': (
+                    'https://www.temu.com/search?q='
+                    f'{product_name.replace(" ", "+")}'
+                ),
+                'image': '',
+                'note': temu_data.get(
+                    'note',
+                    'Estimated price',
+                ),
             })
-    except Exception as e:
-        print("TEMU ERROR:", e)
+
+    except Exception as error:
+        print('TEMU ERROR:', error)
 
     all_results = amazon_results + shein_results + temu_results
 
     if all_results:
         try:
-            analyze_res = httpx.post(GROQ_API_URL, headers=groq_headers, json={
-                'model': GROQ_MODEL,
-                'messages': [
-                    {'role': 'system', 'content': 'Smart shopping assistant. Give a short friendly summary. Mention cheapest option. Note Shein/Temu are estimated prices. Max 2 sentences. Same language as user.'},
-                    {'role': 'user', 'content': f'Searched: {original_message}\nResults: {json.dumps(all_results, ensure_ascii=False)}'}
-                ], 'max_tokens': 150,
-            }, timeout=10)
-            ai_summary = analyze_res.json()['choices'][0]['message']['content']
-        except:
-            ai_summary = f"Found {len(all_results)} results for '{product_name}'."
+            analyze_res = httpx.post(
+                GROQ_API_URL,
+                headers=groq_headers,
+                json={
+                    'model': GROQ_MODEL,
+                    'messages': [
+                        {
+                            'role': 'system',
+                            'content': (
+                                'You are a smart shopping assistant. '
+                                'Give a short, friendly summary and mention '
+                                'the cheapest option. Clearly state that '
+                                'Shein and Temu prices are estimates. '
+                                'Use the same language as the user and '
+                                'write no more than two sentences.'
+                            ),
+                        },
+                        {
+                            'role': 'user',
+                            'content': (
+                                f'Searched: {original_message}\n'
+                                f'Results: '
+                                f'{json.dumps(all_results, ensure_ascii=False)}'
+                            ),
+                        },
+                    ],
+                    'max_tokens': 150,
+                },
+                timeout=10,
+            )
+
+            analyze_res.raise_for_status()
+            ai_summary = (
+                analyze_res.json()['choices'][0]['message']['content']
+            )
+
+        except Exception as error:
+            print('ANALYSIS ERROR:', error)
+            ai_summary = (
+                f"Found {len(all_results)} results for "
+                f"'{product_name}'."
+            )
+
     else:
-        ai_summary = f"Sorry, I couldn't find results for '{product_name}'."
+        ai_summary = (
+            f"Sorry, I couldn't find results for '{product_name}'."
+        )
 
-    payload = {
-        'type': 'search', 'product_name': product_name,
-        'ai_summary': ai_summary, 'results': all_results,
+    return JsonResponse({
+        'type': 'search',
+        'product_name': product_name,
+        'ai_summary': ai_summary,
+        'results': all_results,
         'has_results': len(all_results) > 0,
-        'detected_category': detected_category,
-        'original_message': original_message,
-    }
-
-    if payload['has_results'] and request is not None and request.session.get('role') == 'customer':
-        request.session['assistant_initial_payload'] = dict(payload)
-        request.session.modified = True
-        if source != 'assistant_page':
-            payload['assistant_redirect_url'] = reverse('chatbot_page')
-
-    return JsonResponse(payload)
-
+    })
 
 def customer_request_details(request, id):
     if 'user_id' not in request.session or request.session.get('role') != 'customer':

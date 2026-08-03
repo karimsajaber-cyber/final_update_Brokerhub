@@ -25,6 +25,11 @@ SHEIN_API_HOST  = "shein-scraper-api.p.rapidapi.com"
 TEMU_API_HOST   = "temu-scraper-api.p.rapidapi.com"
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+SQLITE_PATH = os.getenv('SQLITE_PATH')
+SQLITE_NAME = Path(SQLITE_PATH) if SQLITE_PATH else BASE_DIR / 'db.sqlite3'
+
+if SQLITE_PATH:
+    SQLITE_NAME.parent.mkdir(parents=True, exist_ok=True)
 
 
 
@@ -98,7 +103,7 @@ WSGI_APPLICATION = 'BrokersHub.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.getenv('SQLITE_PATH', BASE_DIR / 'db.sqlite3'),
+        'NAME': SQLITE_NAME,
     }
 }
 
