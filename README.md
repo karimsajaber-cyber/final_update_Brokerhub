@@ -96,7 +96,7 @@ The review system:
 ## Project Structure
 
 ```text
-Brokers\_Hub\_2026/
+Brokers\\\_Hub\\\_2026/
 ├── BrokersHub/        # Main Django project configuration
 ├── accounts/          # Custom users, registration, login, and roles
 ├── brokers/           # Broker profiles, broker directory, and filtering
@@ -121,8 +121,8 @@ BrokersHub uses a custom Django user model with three roles:
 ### 1\. Clone the repository
 
 ```bash
-git clone https://github.com/karimsajaber-cyber/Brokers\_Hub\_2026.git
-cd Brokers\_Hub\_2026
+git clone https://github.com/karimsajaber-cyber/Brokers\\\_Hub\\\_2026.git
+cd Brokers\\\_Hub\\\_2026
 ```
 
 The current development work is available on the `karim-work` branch:
@@ -137,7 +137,7 @@ Windows:
 
 ```bash
 python -m venv env
-env\\Scripts\\activate
+env\\\\Scripts\\\\activate
 ```
 
 macOS or Linux:
@@ -202,18 +202,18 @@ The AI assistant, Amazon product search, and email features require external cre
 Recommended environment variables:
 
 ```env
-DJANGO\_SECRET\_KEY=
-DJANGO\_DEBUG=True
+DJANGO\\\_SECRET\\\_KEY=
+DJANGO\\\_DEBUG=True
 
-EMAIL\_HOST\_USER=
-EMAIL\_HOST\_PASSWORD=
+EMAIL\\\_HOST\\\_USER=
+EMAIL\\\_HOST\\\_PASSWORD=
 
-GROQ\_API\_KEY=
-GROQ\_API\_URL=
-GROQ\_MODEL=
+GROQ\\\_API\\\_KEY=
+GROQ\\\_API\\\_URL=
+GROQ\\\_MODEL=
 
-RAPIDAPI\_KEY=
-AMAZON\_API\_HOST=
+RAPIDAPI\\\_KEY=
+AMAZON\\\_API\\\_HOST=
 ```
 
 Keep all real credentials outside the source code. Do not commit `.env` files, API keys, SMTP passwords, or production secrets to GitHub.
@@ -240,7 +240,8 @@ The current version demonstrates:
 
 Future improvements include automated testing, production-ready environment configuration, stronger deployment settings, and expanded broker management tools.
 
-## Screenshots
+
+\## Screenshots
 
 
 
@@ -252,11 +253,11 @@ Future improvements include automated testing, production-ready environment conf
 
 
 
-\### Top Brokers
+\### Brokers
 
 
 
-!\[Broker Directory](assets/screenshots/broker-shot.png)
+!\[Brokers Directory](assets/screenshots/brokers-shot.png)
 
 
 
@@ -268,15 +269,14 @@ Future improvements include automated testing, production-ready environment conf
 
 
 
-\### Reveiws
+\### Reviews
 
 
 
-!\[reveiws](assets/screenshots/reveiws.png)
+!\[Broker Reviews](assets/screenshots/reveiws.png)
 
 
-
-## Author
+##### **Author**
 
 **Karim Jaber**
 
