@@ -241,44 +241,26 @@ The current version demonstrates:
 Future improvements include automated testing, production-ready environment configuration, stronger deployment settings, and expanded broker management tools.
 
 
-\## Screenshots
+## Screenshots
 
+### Landing Page
 
+![BrokersHub Landing Page](assets/screenshots/landing-page.png)
 
-\### Landing Page
+### Brokers
 
+![Brokers Directory](assets/screenshots/brokers-shot.png)
 
+### AI Shopping Assistant
 
-!\[BrokersHub Landing Page](assets/screenshots/landing-page.png)
+![AI Shopping Assistant](assets/screenshots/chatbot-search.png)
 
+### Reviews
 
+![Broker Reviews](assets/screenshots/reveiws.png)
 
-\### Brokers
-
-
-
-!\[Brokers Directory](assets/screenshots/brokers-shot.png)
-
-
-
-\### AI Shopping Assistant
-
-
-
-!\[AI Shopping Assistant](assets/screenshots/chatbot-search.png)
-
-
-
-\### Reviews
-
-
-
-!\[Broker Reviews](assets/screenshots/reveiws.png)
-
-
-##### **Author**
+## Author
 
 **Karim Jaber**
 
 Full-Stack Developer focused on Python, Django, practical workflow systems, and user-centered web applications.
-
